@@ -1,4 +1,4 @@
-import {getRandomNumber, getRandomArrayElement, createId, getOffersCount, getOffersIds, getPairRandomDates} from '../utils.js';
+import {getRandomNumber, getRandomArrayElement, createId, getOffersCount, getRandomOffersIds, getPairRandomDates} from '../utils.js';
 import {POINT_TYPES} from '../const.js';
 
 const generateWayointId = createId();
@@ -15,7 +15,7 @@ const generateWaypoint = (destinationId, offers) => {
     dateTo: dateTo,
     destination: destinationId,
     isFavorite: Boolean(getRandomNumber(0, 1)),
-    offers: getOffersIds(maxOffersCount),
+    offers: getRandomOffersIds(maxOffersCount),
     type: type,
   };
 };

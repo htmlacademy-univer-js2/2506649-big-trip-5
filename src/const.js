@@ -1,10 +1,11 @@
-const WAYPPOINTS_COUNT = 3;
+const WAYPPOINTS_COUNT = 4;
 const DEFAULT_DATE_FORMAT = 'YYYY-MM-DDTHH:mm:ss.sssZ';
+const SHORT_DEFAULT_FORMAT = 'YYYY-MM-DD';
 const SHORT_DATE_FORMAT = 'MMM D';
 const FULL_DATE_FORMAT = 'DD/MM/YY';
 const TIME_FORMAT = 'HH:mm';
 
-const POINT_TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva'];
 
@@ -31,4 +32,4 @@ const OFFER_TITLES = [
   'Lunch in city',
 ];
 
-export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES};
+export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES};
