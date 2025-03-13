@@ -8,17 +8,29 @@ import NewWaypointView from '../view/create-form.js';
 export default class EventsPresenter {
   eventsListComponent = new EventsListView();
 
-  constructor(container) {
+  constructor(container, tripModel) {
     this.container = container;
+    this.tripModel = tripModel;
   }
 
   init() {
+    const waypoints = this.tripModel.getWaypoints();
+    const destinations = this.tripModel.getDestinations();
+
     render(new SortingView(), this.container);
     render(this.eventsListComponent, this.container);
+
+    waypoints.map((point) => {
+      const destination = this.tripModel.getDestinationById(point.destination);
+      const offersList = this.tripModel.getOffersByType(point.type);
+
+      if (point.id === 1) {
+        render(new EditWaypointView(point, offersList, destination, destinations), this.eventsListComponent.getElement());
+      } else {
+        render(new WaypointView(point, offersList, destination), this.eventsListComponent.getElement());
+      }
+    });
+
     render(new NewWaypointView(), this.eventsListComponent.getElement());
-    render(new EditWaypointView(), this.eventsListComponent.getElement());
-    for (let i = 0; i < 3; i++) {
-      render(new WaypointView(), this.eventsListComponent.getElement());
-    }
   }
 }
