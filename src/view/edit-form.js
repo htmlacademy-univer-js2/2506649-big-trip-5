@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {POINT_TYPES} from '../const.js';
 import {capitalizeFirstLetter} from '../utils.js';
 import {formatToFullDate, humanizeTime} from '../utils.js';
@@ -104,27 +104,21 @@ const createEditWaypointTemplate = (point, {offers}, {description, name}, destin
   `);
 };
 
-export default class EditWaypointView {
+export default class EditWaypointView extends AbstractView {
+  #point = null;
+  #offers = null;
+  #destination = null;
+  #destinationsList = null;
+
   constructor (point, offers, destination, destinationsList) {
-    this.point = point;
-    this.offers = offers;
-    this.destination = destination;
-    this.destinationsList = destinationsList;
+    super();
+    this.#point = point;
+    this.#offers = offers;
+    this.#destination = destination;
+    this.#destinationsList = destinationsList;
   }
 
-  getTemplate () {
-    return createEditWaypointTemplate(this.point, this.offers, this.destination, this.destinationsList);
-  }
-
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template () {
+    return createEditWaypointTemplate(this.#point, this.#offers, this.#destination, this.#destinationsList);
   }
 }
