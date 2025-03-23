@@ -1,5 +1,6 @@
 import {CITIES, DESCRIPTIONS} from '../const.js';
-import {getRandomArrayElement, getRandomNumber, createId} from '../utils.js';
+import {createId} from '../utils/mock.js';
+import {getRandomArrayElement, getRandomNumber} from '../utils/common.js';
 
 const generateDestinationId = createId();
 

@@ -1,7 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {POINT_TYPES} from '../const.js';
-import {capitalizeFirstLetter} from '../utils.js';
-import {formatToFullDate, humanizeTime} from '../utils.js';
+import {formatToFullDate, humanizeTime, capitalizeFirstLetter} from '../utils/waypoints.js';
 
 const createEventTypeTemplate = (type) => (`
   <div class="event__type-item">

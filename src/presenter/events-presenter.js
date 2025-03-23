@@ -15,13 +15,7 @@ export default class EventsPresenter {
   }
 
   init() {
-    const waypoints = this.#tripModel.waypoints;
-    const destinations = this.#tripModel.destinations;
-
-    render(new SortingView(), this.#container);
-    render(this.#eventsListComponent, this.#container);
-
-    waypoints.map((point) => this.#renderWaypoint(point, destinations));
+    this.#renderEvents();
   }
 
   #renderWaypoint(point, destinations) {
@@ -66,5 +60,15 @@ export default class EventsPresenter {
     }
 
     render(waypointComponent, this.#eventsListComponent.element);
+  }
+
+  #renderEvents() {
+    const waypoints = this.#tripModel.waypoints;
+    const destinations = this.#tripModel.destinations;
+
+    render(new SortingView(), this.#container);
+    render(this.#eventsListComponent, this.#container);
+
+    waypoints.map((point) => this.#renderWaypoint(point, destinations));
   }
 }

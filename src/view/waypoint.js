@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, capitalizeFirstLetter, getTimeDuration} from '../utils.js';
+import {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, capitalizeFirstLetter, getTimeDuration} from '../utils/waypoints.js';
 
 const createOfferTemplate = ({title, price}) => (`
   <li class="event__offer">
