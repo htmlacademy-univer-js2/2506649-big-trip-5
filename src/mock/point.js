@@ -1,4 +1,5 @@
-import {getRandomNumber, getRandomArrayElement, createId, getOffersCount, getRandomOffersIds, getPairRandomDates} from '../utils.js';
+import {createId, getOffersCount, getRandomOffersIds, getPairRandomDates} from '../utils/mock.js';
+import {getRandomArrayElement, getRandomNumber} from '../utils/common.js';
 import {POINT_TYPES} from '../const.js';
 
 const generateWayointId = createId();

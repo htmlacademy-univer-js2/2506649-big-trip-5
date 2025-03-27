@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
-import {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, capitalizeFirstLetter, getTimeDuration} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, capitalizeFirstLetter, getTimeDuration} from '../utils/waypoints.js';
 
 const createOfferTemplate = ({title, price}) => (`
   <li class="event__offer">
@@ -49,26 +49,28 @@ const createWaypointTemplate = (point, {offers}, {name}) => {
   `);
 };
 
-export default class WaypointView {
-  constructor (point, offers, destination) {
-    this.point = point;
-    this.offers = offers;
-    this.destination = destination;
+export default class WaypointView extends AbstractView {
+  #point = null;
+  #offers = null;
+  #destination = null;
+  #handleEditClick = null;
+
+  constructor ({point, offers, destination, onEditClick}) {
+    super();
+    this.#point = point;
+    this.#offers = offers;
+    this.#destination = destination;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate () {
-    return createWaypointTemplate(this.point, this.offers, this.destination);
+  get template () {
+    return createWaypointTemplate(this.#point, this.#offers, this.#destination);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

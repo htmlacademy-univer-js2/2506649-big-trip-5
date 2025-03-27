@@ -5,30 +5,30 @@ import {generateOffers} from '../mock/offers.js';
 import {generateDestination} from '../mock/destination.js';
 
 export default class TripModel {
-  destinations = Array.from({length: WAYPPOINTS_COUNT}, () => generateDestination());
-  offers = POINT_TYPES.map((type) => generateOffers(type));
-  waypoints = this.destinations.map(({id}) => generateWaypoint(id, this.offers));
+  #destinations = Array.from({length: WAYPPOINTS_COUNT}, () => generateDestination());
+  #offers = POINT_TYPES.map((type) => generateOffers(type));
+  #waypoints = this.#destinations.map(({id}) => generateWaypoint(id, this.offers));
 
-  getWaypoints() {
-    return this.waypoints;
+  get waypoints() {
+    return this.#waypoints;
   }
 
-  getOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
-  getDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
   getDestinationById(id) {
-    const allDestinations = this.getDestinations();
+    const allDestinations = this.destinations;
     return allDestinations.find((destination) => destination.id === id);
 
   }
 
   getOffersByType(type) {
-    const allOffers = this.getOffers();
+    const allOffers = this.offers;
     return allOffers.find((offer) => offer.type === type);
   }
 }
