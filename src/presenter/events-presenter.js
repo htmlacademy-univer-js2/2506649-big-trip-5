@@ -3,6 +3,7 @@ import SortingView from '../view/sorting.js';
 import EventsListView from '../view/events-list.js';
 import WaypointView from '../view/waypoint.js';
 import EditWaypointView from '../view/edit-form.js';
+import NoWaypointsView from '../view/no-waypoints.js';
 
 export default class EventsPresenter {
   #container = null;
@@ -65,6 +66,11 @@ export default class EventsPresenter {
   #renderEvents() {
     const waypoints = this.#tripModel.waypoints;
     const destinations = this.#tripModel.destinations;
+
+    if (!waypoints.length) {
+      render(new NoWaypointsView(), this.#container);
+      return;
+    }
 
     render(new SortingView(), this.#container);
     render(this.#eventsListComponent, this.#container);
