@@ -7,7 +7,12 @@ import WaypointPresenter from './waypoint-presenter.js';
 export default class EventsPresenter {
   #container = null;
   #tripModel = null;
+
+  #sortingComponent = new SortingView();
+  #noWaypointsComponent = new NoWaypointsView();
   #eventsListComponent = new EventsListView();
+
+  #waypoints = null;
 
   constructor(container, tripModel) {
     this.#container = container;
@@ -15,6 +20,8 @@ export default class EventsPresenter {
   }
 
   init() {
+    this.#waypoints = [...this.#tripModel.waypoints];
+
     this.#renderEvents();
   }
 
@@ -24,23 +31,37 @@ export default class EventsPresenter {
     waypointPresenter.init(point, destinationsList, destination, offersList);
   }
 
-  #renderEvents() {
-    const waypoints = [...this.#tripModel.waypoints];
+  #renderWaypoints() {
     const destinationsList = this.#tripModel.destinations;
 
-    if (!waypoints.length) {
-      render(new NoWaypointsView(), this.#container);
-      return;
-    }
-
-    render(new SortingView(), this.#container);
-    render(this.#eventsListComponent, this.#container);
-
-    waypoints.map((point) => {
+    this.#waypoints.map((point) => {
       const destination = this.#tripModel.getDestinationById(point.destination);
       const offersList = this.#tripModel.getOffersByType(point.type);
 
       this.#renderWaypoint(point, destinationsList, destination, offersList);
     });
+  }
+
+  #renderNoWaypoints() {
+    render(this.#noWaypointsComponent, this.#container);
+  }
+
+  #renderSorting() {
+    render(this.#sortingComponent, this.#container);
+  }
+
+  #renderEventsList() {
+    render(this.#eventsListComponent, this.#container);
+  }
+
+  #renderEvents() {
+    if (!this.#waypoints.length) {
+      this.#renderNoWaypoints();
+      return;
+    }
+
+    this.#renderSorting();
+    this.#renderEventsList();
+    this.#renderWaypoints();
   }
 }
