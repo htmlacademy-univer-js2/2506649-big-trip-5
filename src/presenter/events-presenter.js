@@ -23,11 +23,11 @@ export default class EventsPresenter {
     const destination = this.#tripModel.getDestinationById(point.destination);
     const offersList = this.#tripModel.getOffersByType(point.type);
 
-    const escKeyDownHandler = (evt) => {
+    const onEscKeydown = (evt) => {
       if (evt.key === 'Escape') {
         evt.preventDefault();
         replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
+        document.removeEventListener('keydown', onEscKeydown);
       }
     };
 
@@ -35,9 +35,10 @@ export default class EventsPresenter {
       point,
       offers: offersList,
       destination,
-      onEditClick: () => {
+      onEditClick: (evt) => {
+        evt.preventDefault();
         replacePointToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
+        document.addEventListener('keydown', onEscKeydown);
       },
     });
 
@@ -46,9 +47,10 @@ export default class EventsPresenter {
       offers: offersList,
       destination,
       destinationsList: destinations,
-      onFormSumbmit: () => {
+      onFormSumbmit: (evt) => {
+        evt.preventDefault();
         replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
+        document.removeEventListener('keydown', onEscKeydown);
       },
     });
 
