@@ -33,8 +33,12 @@ export default class EventsPresenter {
     this.#waypointPresenters.get(updatedWaypoint.point.id).init(updatedWaypoint);
   };
 
+  #changeWaypointMode = () => {
+    this.#waypointPresenters.forEach((waypointPresenter) => waypointPresenter.resetToDefaultWaypoint());
+  };
+
   #renderWaypoint(point, destinationsList, destination, offersList) {
-    const waypointPresenter = new WaypointPresenter({eventsListComponent: this.#eventsListComponent.element, updateWaypointsData: this.#updateWaypointsData});
+    const waypointPresenter = new WaypointPresenter({eventsListComponent: this.#eventsListComponent.element, updateWaypointsData: this.#updateWaypointsData, changeWaypointMode: this.#changeWaypointMode});
 
     waypointPresenter.init({point, destinationsList, destination, offersList});
     this.#waypointPresenters.set(point.id, waypointPresenter);
