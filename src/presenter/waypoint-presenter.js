@@ -1,33 +1,41 @@
 import WaypointView from '../view/waypoint.js';
 import EditWaypointView from '../view/edit-form.js';
-import {render, replace} from '../framework/render.js';
+import {render, replace, remove} from '../framework/render.js';
 
 
 export default class WaypointPresenter {
   #eventsListComponent = null;
+
   #waypointComponent = null;
   #waypointEditComponent = null;
+
   #point = null;
   #destinationsList = null;
   #destination = null;
   #offersList = null;
+  #updateWaypointsData = null;
 
-  constructor({eventsListComponent}) {
+  constructor({eventsListComponent, updateWaypointsData}) {
     this.#eventsListComponent = eventsListComponent;
+    this.#updateWaypointsData = updateWaypointsData;
   }
 
 
-  init(point, destinationsList, destination, offersList) {
+  init({point, destinationsList, destination, offersList}) {
     this.#point = point;
     this.#destinationsList = destinationsList;
     this.#destination = destination;
     this.#offersList = offersList;
+
+    const prevWaypointComponent = this.#waypointComponent;
+    const prevWaypointEditComponent = this.#waypointEditComponent;
 
     this.#waypointComponent = new WaypointView({
       point: this.#point,
       offers: this.#offersList,
       destination: this.#destination,
       onEditClick: this.#onEditClick,
+      onFavoriteClick: this.#onFavoriteClick,
     });
 
     this.#waypointEditComponent = new EditWaypointView({
@@ -38,7 +46,22 @@ export default class WaypointPresenter {
       onFormSumbmit: this.#onFormSubmit,
     });
 
-    render(this.#waypointComponent, this.#eventsListComponent.element);
+    if (prevWaypointComponent === null || prevWaypointEditComponent === null) {
+      render(this.#waypointComponent, this.#eventsListComponent);
+      return;
+    }
+
+    if (this.#eventsListComponent.contains(prevWaypointComponent.element)) {
+      replace(this.#waypointComponent, prevWaypointComponent);
+    }
+
+    if (this.#eventsListComponent.contains(prevWaypointEditComponent.element)) {
+      replace(this.#waypointEditComponent, prevWaypointEditComponent);
+    }
+
+    remove(prevWaypointComponent);
+    remove(prevWaypointEditComponent);
+
   }
 
   #replacePointToForm() {
@@ -67,5 +90,19 @@ export default class WaypointPresenter {
     evt.preventDefault();
     this.#replaceFormToPoint();
     document.removeEventListener('keydown', this.#onEscKeydown);
+  };
+
+  #onFavoriteClick = (evt) => {
+    evt.preventDefault();
+
+    const updatedPoint = {...this.#point, isFavorite: !this.#point.isFavorite};
+    const updatedWaypoint = {
+      point: updatedPoint,
+      destinationsList: this.#destinationsList,
+      destination: this.#destination,
+      offersList: this.#offersList,
+    };
+
+    this.#updateWaypointsData(updatedWaypoint);
   };
 }
