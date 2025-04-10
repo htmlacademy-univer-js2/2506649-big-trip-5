@@ -1,14 +1,21 @@
-import {render, replace} from '../framework/render.js';
+import {render} from '../framework/render.js';
 import SortingView from '../view/sorting.js';
 import EventsListView from '../view/events-list.js';
-import WaypointView from '../view/waypoint.js';
-import EditWaypointView from '../view/edit-form.js';
 import NoWaypointsView from '../view/no-waypoints.js';
+import WaypointPresenter from './waypoint-presenter.js';
+import { updateItem } from '../utils/common.js';
 
 export default class EventsPresenter {
   #container = null;
   #tripModel = null;
+
+  #sortingComponent = new SortingView();
+  #noWaypointsComponent = new NoWaypointsView();
   #eventsListComponent = new EventsListView();
+
+  #waypoints = null;
+
+  #waypointPresenters = new Map();
 
   constructor(container, tripModel) {
     this.#container = container;
@@ -16,65 +23,58 @@ export default class EventsPresenter {
   }
 
   init() {
+    this.#waypoints = [...this.#tripModel.waypoints];
+
     this.#renderEvents();
   }
 
-  #renderWaypoint(point, destinations) {
-    const destination = this.#tripModel.getDestinationById(point.destination);
-    const offersList = this.#tripModel.getOffersByType(point.type);
+  #updateWaypointsData = (updatedWaypoint) => {
+    this.#waypoints = updateItem(this.#waypoints, updatedWaypoint.point);
+    this.#waypointPresenters.get(updatedWaypoint.point.id).init(updatedWaypoint);
+  };
 
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
+  #changeWaypointsMode = () => {
+    this.#waypointPresenters.forEach((waypointPresenter) => waypointPresenter.resetToDefaultWaypoint());
+  };
 
-    const waypointComponent = new WaypointView({
-      point,
-      offers: offersList,
-      destination,
-      onEditClick: () => {
-        replacePointToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      },
+  #renderWaypoint(point, destinationsList, destination, offersList) {
+    const waypointPresenter = new WaypointPresenter({eventsListComponent: this.#eventsListComponent.element, updateWaypointsData: this.#updateWaypointsData, changeWaypointsMode: this.#changeWaypointsMode});
+
+    waypointPresenter.init({point, destinationsList, destination, offersList});
+    this.#waypointPresenters.set(point.id, waypointPresenter);
+  }
+
+  #renderWaypoints() {
+    const destinationsList = this.#tripModel.destinations;
+
+    this.#waypoints.map((point) => {
+      const destination = this.#tripModel.getDestinationById(point.destination);
+      const offersList = this.#tripModel.getOffersByType(point.type);
+
+      this.#renderWaypoint(point, destinationsList, destination, offersList);
     });
+  }
 
-    const waypointEditComponent = new EditWaypointView({
-      point,
-      offers: offersList,
-      destination,
-      destinationsList: destinations,
-      onFormSumbmit: () => {
-        replaceFormToPoint();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-    });
+  #renderNoWaypoints() {
+    render(this.#noWaypointsComponent, this.#container);
+  }
 
-    function replacePointToForm () {
-      replace(waypointEditComponent, waypointComponent);
-    }
+  #renderSorting() {
+    render(this.#sortingComponent, this.#container);
+  }
 
-    function replaceFormToPoint () {
-      replace(waypointComponent, waypointEditComponent);
-    }
-
-    render(waypointComponent, this.#eventsListComponent.element);
+  #renderEventsList() {
+    render(this.#eventsListComponent, this.#container);
   }
 
   #renderEvents() {
-    const waypoints = this.#tripModel.waypoints;
-    const destinations = this.#tripModel.destinations;
-
-    if (!waypoints.length) {
-      render(new NoWaypointsView(), this.#container);
+    if (!this.#waypoints.length) {
+      this.#renderNoWaypoints();
       return;
     }
 
-    render(new SortingView(), this.#container);
-    render(this.#eventsListComponent, this.#container);
-
-    waypoints.map((point) => this.#renderWaypoint(point, destinations));
+    this.#renderSorting();
+    this.#renderEventsList();
+    this.#renderWaypoints();
   }
 }

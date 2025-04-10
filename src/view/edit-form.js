@@ -108,7 +108,7 @@ export default class EditWaypointView extends AbstractView {
   #offers = null;
   #destination = null;
   #destinationsList = null;
-  #handleFormSubmit = null;
+  #onFormSumbmit = null;
 
   constructor ({point, offers, destination, destinationsList, onFormSumbmit}) {
     super();
@@ -116,19 +116,14 @@ export default class EditWaypointView extends AbstractView {
     this.#offers = offers;
     this.#destination = destination;
     this.#destinationsList = destinationsList;
-    this.#handleFormSubmit = onFormSumbmit;
+    this.#onFormSumbmit = onFormSumbmit;
 
-    this.element.addEventListener('submit', this.#formSubmitHandler);
+    this.element.addEventListener('submit', this.#onFormSumbmit);
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSumbmit);
   }
 
   get template () {
     return createEditWaypointTemplate(this.#point, this.#offers, this.#destination, this.#destinationsList);
   }
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleFormSubmit();
-  };
 }
