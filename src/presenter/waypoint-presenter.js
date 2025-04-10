@@ -9,7 +9,7 @@ export default class WaypointPresenter {
 
   #waypointComponent = null;
   #waypointEditComponent = null;
-  #changeWaypointMode = null;
+  #changeWaypointsMode = null;
 
   #point = null;
   #destinationsList = null;
@@ -19,10 +19,10 @@ export default class WaypointPresenter {
 
   #mode = Modes.DEFAULT;
 
-  constructor({eventsListComponent, updateWaypointsData, changeWaypointMode}) {
+  constructor({eventsListComponent, updateWaypointsData, changeWaypointsMode}) {
     this.#eventsListComponent = eventsListComponent;
     this.#updateWaypointsData = updateWaypointsData;
-    this.#changeWaypointMode = changeWaypointMode;
+    this.#changeWaypointsMode = changeWaypointsMode;
   }
 
 
@@ -76,7 +76,7 @@ export default class WaypointPresenter {
 
   #replacePointToForm() {
     replace(this.#waypointEditComponent, this.#waypointComponent);
-    this.#changeWaypointMode();
+    this.#changeWaypointsMode();
     this.#mode = Modes.EDITING;
   }
 
