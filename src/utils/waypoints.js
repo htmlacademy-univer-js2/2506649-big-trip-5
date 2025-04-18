@@ -14,7 +14,11 @@ const getTimeDuration = (dateFrom, dateTo) => {
   const startDate = dayjs(dateFrom);
   const endDate = dayjs(dateTo);
 
-  const differenceInMinutes = endDate.diff(startDate, 'minute');
+  return endDate.diff(startDate, 'minute');
+};
+
+const humanizeTimeDuration = (dateFrom, dateTo) => {
+  const differenceInMinutes = getTimeDuration(dateFrom, dateTo);
   let hours = Math.floor(differenceInMinutes / 60);
   let minutes = differenceInMinutes % 60;
 
@@ -25,4 +29,25 @@ const getTimeDuration = (dateFrom, dateTo) => {
   return timeDuration;
 };
 
-export {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, formatToFullDate, capitalizeFirstLetter, getTimeDuration};
+const sortByDate = (waypointA, waypointB) => {
+  const dateA = dayjs(waypointA.dateFrom);
+  const dateB = dayjs(waypointB.dateFrom);
+
+  return dateA.diff(dateB, 'minute');
+};
+
+const sortByTime = (waypointA, waypointB) => {
+  const timeDurationA = getTimeDuration(waypointA.dateFrom, waypointA.dateTo);
+  const timeDurationB = getTimeDuration(waypointB.dateFrom, waypointB.dateTo);
+
+  return timeDurationB - timeDurationA;
+};
+
+const sortByPrice = (waypointA, waypointB) => {
+  const priceA = waypointA.basePrice;
+  const priceB = waypointB.basePrice;
+
+  return priceB - priceA;
+};
+
+export {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, formatToFullDate, capitalizeFirstLetter, getTimeDuration, humanizeTimeDuration, sortByDate, sortByTime, sortByPrice};

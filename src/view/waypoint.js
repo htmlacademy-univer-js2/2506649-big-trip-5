@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, capitalizeFirstLetter, getTimeDuration} from '../utils/waypoints.js';
+import {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, capitalizeFirstLetter, humanizeTimeDuration} from '../utils/waypoints.js';
 
 const createOfferTemplate = ({title, price}) => (`
   <li class="event__offer">
@@ -26,7 +26,7 @@ const createWaypointTemplate = (point, {offers}, {name}) => {
             &mdash;
             <time class="event__end-time" datetime=${formatToDefaultDate(dateTo)}>${humanizeTime(dateTo)}</time>
           </p>
-          <p class="event__duration">${getTimeDuration(dateFrom, dateTo)}</p>
+          <p class="event__duration">${humanizeTimeDuration(dateFrom, dateTo)}</p>
         </div>
         <p class="event__price">
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
