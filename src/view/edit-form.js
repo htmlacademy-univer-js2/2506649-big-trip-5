@@ -1,7 +1,19 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {POINT_TYPES} from '../const.js';
+import {FormMode, POINT_TYPES} from '../const.js';
 import {formatToFullDate, humanizeTime, capitalizeFirstLetter} from '../utils/waypoints.js';
 import { toggleArrayElement } from '../utils/common.js';
+import { generateWayointId } from '../mock/point.js';
+
+const BLANK_POINT = {
+  id: generateWayointId(),
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: 'flight',
+};
 
 const createEventTypeTemplate = (type, checkedAttribute) => (`
   <div class="event__type-item">
@@ -29,7 +41,7 @@ const createOfferTemplate = ({id, title, price}, checkedAttribute) => (`
   </div>
 `);
 
-const createEditWaypointTemplate = ({point, offers : offersType, destination}, destinationsList) => {
+const createEditWaypointTemplate = ({point, offers : offersType, destination}, destinationsList, mode) => {
   const {basePrice, dateFrom, dateTo, offers : offersPoint, type} = point;
   const {offers} = offersType;
   const {name, description, pictures} = destination;
@@ -62,7 +74,7 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
             <label class="event__label  event__type-output" for="event-destination-1">
               ${capitalizeFirstLetter(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${name} list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${destinationsList.map((item) => createDestinationsListTemplate(item.name))}
             </datalist>
@@ -85,10 +97,10 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
+          <button class="event__reset-btn" type="reset">${mode === FormMode.ADDING ? 'Cancel' : 'Delete'}</button>
+          ${mode === FormMode.EDITING ? `<button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
-          </button>
+          </button>` : ''}
         </header>
         <section class="event__details">
           ${offers.length !== 0 ? `<section class="event__section  event__section--offers">
@@ -126,8 +138,9 @@ export default class EditWaypointView extends AbstractStatefulView {
   #onFormSumbmit = null;
   #updateDestination = null;
   #updateOffers = null;
+  #mode = null;
 
-  constructor ({point, offers, destination, destinationsList, onFormSumbmit, updateDestination, updateOffers}) {
+  constructor ({point = BLANK_POINT, offers, destination, destinationsList, onFormSumbmit, updateDestination, updateOffers}) {
     super();
     this._setState(EditWaypointView.parsePointToState(point, offers, destination));
     this.#destinationsList = destinationsList;
@@ -135,11 +148,13 @@ export default class EditWaypointView extends AbstractStatefulView {
     this.#updateDestination = updateDestination;
     this.#updateOffers = updateOffers;
 
+    this.#mode = point === BLANK_POINT ? FormMode.ADDING : FormMode.EDITING;
+
     this._restoreHandlers();
   }
 
   get template () {
-    return createEditWaypointTemplate(this._state, this.#destinationsList);
+    return createEditWaypointTemplate(this._state, this.#destinationsList, this.#mode);
   }
 
   reset (point, offers, destination) {
@@ -148,7 +163,7 @@ export default class EditWaypointView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.addEventListener('submit', this.#onFormSumbmit);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSumbmit);
+    this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onFormSumbmit);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#onTypeClick);
     this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
