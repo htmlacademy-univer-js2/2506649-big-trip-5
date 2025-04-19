@@ -135,16 +135,18 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
 
 export default class EditWaypointView extends AbstractStatefulView {
   #destinationsList = null;
-  #onFormSumbmit = null;
+  #handleFormSumbmit = null;
+  #onCloseForm = null;
   #updateDestination = null;
   #updateOffers = null;
   #mode = null;
 
-  constructor ({point = BLANK_POINT, offers, destination, destinationsList, onFormSumbmit, updateDestination, updateOffers}) {
+  constructor ({point = BLANK_POINT, offers, destination, destinationsList, handleFormSumbmit, onCloseForm, updateDestination, updateOffers}) {
     super();
     this._setState(EditWaypointView.parsePointToState(point, offers, destination));
     this.#destinationsList = destinationsList;
-    this.#onFormSumbmit = onFormSumbmit;
+    this.#handleFormSumbmit = handleFormSumbmit;
+    this.#onCloseForm = onCloseForm;
     this.#updateDestination = updateDestination;
     this.#updateOffers = updateOffers;
 
@@ -162,13 +164,18 @@ export default class EditWaypointView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.addEventListener('submit', this.#onFormSumbmit);
-    this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onFormSumbmit);
+    this.element.addEventListener('submit', this.#onFormSubmit);
+    this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onCloseForm);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#onTypeClick);
     this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
     this.element.querySelector('.event__available-offers')?.addEventListener('click', this.#onOfferClick);
   }
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSumbmit(EditWaypointView.parseStateToPoint(this._state));
+  };
 
   #onPriceInput = (evt) => {
     evt.preventDefault();
@@ -238,8 +245,13 @@ export default class EditWaypointView extends AbstractStatefulView {
   }
 
   static parseStateToPoint(state) {
-    return {
-      ...state
+    const waypoint = {
+      ...state,
+      offersList: state.offers
     };
+
+    delete waypoint.offers;
+
+    return waypoint;
   }
 }
