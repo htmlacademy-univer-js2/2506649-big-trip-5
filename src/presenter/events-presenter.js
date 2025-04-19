@@ -46,11 +46,25 @@ export default class EventsPresenter {
     this.#waypointPresenters.clear();
   }
 
+  #updateDestination = (updatedName) => {
+    const updatedDestination = this.#tripModel.getDestinationByName(updatedName);
+
+    return updatedDestination;
+  };
+
+  #updateOffers = (updatedType) => {
+    const updatedOffers = this.#tripModel.getOffersByType(updatedType);
+
+    return updatedOffers;
+  };
+
   #renderWaypoint(point, destinationsList, destination, offersList) {
     const waypointPresenter = new WaypointPresenter({
       eventsListComponent: this.#eventsListComponent.element,
       updateWaypointsData: this.#updateWaypointsData,
-      resetWaypointsMode: this.#resetWaypointsMode
+      resetWaypointsMode: this.#resetWaypointsMode,
+      updateDestination: this.#updateDestination,
+      updateOffers: this.#updateOffers,
     });
 
     waypointPresenter.init({point, destinationsList, destination, offersList});

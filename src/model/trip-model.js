@@ -24,7 +24,11 @@ export default class TripModel {
   getDestinationById(id) {
     const allDestinations = this.destinations;
     return allDestinations.find((destination) => destination.id === id);
+  }
 
+  getDestinationByName(name) {
+    const allDestinations = this.destinations;
+    return allDestinations.find((destination) => destination.name === name);
   }
 
   getOffersByType(type) {

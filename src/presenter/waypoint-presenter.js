@@ -10,6 +10,8 @@ export default class WaypointPresenter {
   #waypointComponent = null;
   #waypointEditComponent = null;
   #resetWaypointsMode = null;
+  #updateDestination = null;
+  #updateOffers = null;
 
   #point = null;
   #destinationsList = null;
@@ -19,10 +21,12 @@ export default class WaypointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor({eventsListComponent, updateWaypointsData, resetWaypointsMode}) {
+  constructor({eventsListComponent, updateWaypointsData, resetWaypointsMode, updateDestination, updateOffers}) {
     this.#eventsListComponent = eventsListComponent;
     this.#updateWaypointsData = updateWaypointsData;
     this.#resetWaypointsMode = resetWaypointsMode;
+    this.#updateDestination = updateDestination;
+    this.#updateOffers = updateOffers;
   }
 
 
@@ -49,6 +53,8 @@ export default class WaypointPresenter {
       destination: this.#destination,
       destinationsList: this.#destinationsList,
       onFormSumbmit: this.#onFormSubmit,
+      updateDestination: this.#updateDestination,
+      updateOffers: this.#updateOffers,
     });
 
     if (prevWaypointComponent === null || prevWaypointEditComponent === null) {
@@ -75,6 +81,7 @@ export default class WaypointPresenter {
 
   resetToDefaultWaypoint() {
     if (this.#mode === Mode.EDITING) {
+      this.#waypointEditComponent.reset(this.#point, this.#offersList, this.#destination);
       this.#replaceFormToPoint();
     }
   }
@@ -95,6 +102,7 @@ export default class WaypointPresenter {
   #onEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#waypointEditComponent.reset(this.#point, this.#offersList, this.#destination);
       this.#replaceFormToPoint();
     }
   };

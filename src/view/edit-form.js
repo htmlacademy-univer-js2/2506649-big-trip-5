@@ -1,6 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {POINT_TYPES} from '../const.js';
 import {formatToFullDate, humanizeTime, capitalizeFirstLetter} from '../utils/waypoints.js';
+import { toggleArrayElement } from '../utils/common.js';
 
 const createEventTypeTemplate = (type, checkedAttribute) => (`
   <div class="event__type-item">
@@ -28,8 +29,10 @@ const createOfferTemplate = ({id, title, price}, checkedAttribute) => (`
   </div>
 `);
 
-const createEditWaypointTemplate = (point, {offers}, {name, description, pictures}, destinationsList) => {
+const createEditWaypointTemplate = ({point, offers : offersType, destination}, destinationsList) => {
   const {basePrice, dateFrom, dateTo, offers : offersPoint, type} = point;
+  const {offers} = offersType;
+  const {name, description, pictures} = destination;
 
   return (`
     <li class="trip-events__item">
@@ -61,7 +64,7 @@ const createEditWaypointTemplate = (point, {offers}, {name, description, picture
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${name} list="destination-list-1">
             <datalist id="destination-list-1">
-              ${destinationsList.map((destination) => createDestinationsListTemplate(destination.name))}
+              ${destinationsList.map((item) => createDestinationsListTemplate(item.name))}
             </datalist>
           </div>
 
@@ -119,26 +122,109 @@ const createEditWaypointTemplate = (point, {offers}, {name, description, picture
 };
 
 export default class EditWaypointView extends AbstractStatefulView {
-  #point = null;
-  #offers = null;
-  #destination = null;
   #destinationsList = null;
   #onFormSumbmit = null;
+  #updateDestination = null;
+  #updateOffers = null;
 
-  constructor ({point, offers, destination, destinationsList, onFormSumbmit}) {
+  constructor ({point, offers, destination, destinationsList, onFormSumbmit, updateDestination, updateOffers}) {
     super();
-    this.#point = point;
-    this.#offers = offers;
-    this.#destination = destination;
+    this._setState(EditWaypointView.parsePointToState(point, offers, destination));
     this.#destinationsList = destinationsList;
     this.#onFormSumbmit = onFormSumbmit;
+    this.#updateDestination = updateDestination;
+    this.#updateOffers = updateOffers;
 
-    this.element.addEventListener('submit', this.#onFormSumbmit);
-
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSumbmit);
+    this._restoreHandlers();
   }
 
   get template () {
-    return createEditWaypointTemplate(this.#point, this.#offers, this.#destination, this.#destinationsList);
+    return createEditWaypointTemplate(this._state, this.#destinationsList);
+  }
+
+  reset (point, offers, destination) {
+    this.updateElement(EditWaypointView.parsePointToState(point, offers, destination));
+  }
+
+  _restoreHandlers() {
+    this.element.addEventListener('submit', this.#onFormSumbmit);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#onFormSumbmit);
+    this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#onTypeClick);
+    this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
+    this.element.querySelector('.event__available-offers')?.addEventListener('click', this.#onOfferClick);
+  }
+
+  #onPriceInput = (evt) => {
+    evt.preventDefault();
+
+    const updatedPrice = evt.target.value;
+    this._setState({
+      point: {
+        ...this._state.point,
+        basePrice: updatedPrice,
+      }
+    });
+  };
+
+  #onDestinationChange = (evt) => {
+    evt.preventDefault();
+
+    const updatedDestination = this.#updateDestination(evt.target.value);
+    this.updateElement({
+      destination: updatedDestination
+    });
+  };
+
+  #onTypeClick = (evt) => {
+    evt.preventDefault();
+
+    const clickedElement = evt.target;
+    if (!clickedElement.closest('.event__type-input')) {
+      return;
+    }
+
+    const updatedType = clickedElement.value;
+    const updatedOffers = this.#updateOffers(updatedType);
+
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        type: updatedType,
+        offers: []
+      },
+      offers: updatedOffers,
+    });
+  };
+
+  #onOfferClick = (evt) => {
+    const clickedElement = evt.target;
+    if (!clickedElement.closest('.event__offer-checkbox')) {
+      return;
+    }
+
+    const updatedOfferId = Number(clickedElement.id);
+    const updatedOffers = toggleArrayElement(this._state.point.offers, updatedOfferId);
+
+    this._setState({
+      point: {
+        ...this._state.point,
+        offers: updatedOffers
+      }
+    });
+  };
+
+  static parsePointToState(point, offers, destination) {
+    return {
+      point,
+      offers,
+      destination
+    };
+  }
+
+  static parseStateToPoint(state) {
+    return {
+      ...state
+    };
   }
 }

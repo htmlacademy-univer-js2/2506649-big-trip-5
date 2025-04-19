@@ -4,4 +4,14 @@ const getRandomArrayElement = (array) => (array[getRandomNumber(0, array.length 
 
 const updateItem = (items, updatedItem) => (items.map((item) => item.id === updatedItem.id ? updatedItem : item));
 
-export {getRandomNumber, getRandomArrayElement, updateItem};
+const toggleArrayElement = (array, element) => {
+  const indexElement = array.findIndex((item) => item === element);
+
+  if (indexElement === -1) {
+    return [...array, element];
+  }
+
+  return array.filter((_, index) => index !== indexElement);
+};
+
+export {getRandomNumber, getRandomArrayElement, updateItem, toggleArrayElement};
