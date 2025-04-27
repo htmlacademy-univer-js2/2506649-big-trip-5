@@ -19,13 +19,15 @@ const getTimeDuration = (dateFrom, dateTo) => {
 
 const humanizeTimeDuration = (dateFrom, dateTo) => {
   const differenceInMinutes = getTimeDuration(dateFrom, dateTo);
-  let hours = Math.floor(differenceInMinutes / 60);
-  let minutes = differenceInMinutes % 60;
+  const countDays = Math.floor(differenceInMinutes / 60 / 24);
+  const countHours = Math.floor(differenceInMinutes / 60) - countDays * 24;
+  const countMinutes = differenceInMinutes % 60;
 
-  hours = hours >= 10 ? `${hours}` : `0${hours}`;
-  minutes = minutes >= 10 ? `${minutes}` : `0${minutes}`;
+  const days = countDays >= 10 ? `${countDays}D` : `0${countDays}D`;
+  const hours = countHours >= 10 ? `${countHours}H` : `0${countHours}H`;
+  const minutes = countMinutes >= 10 ? `${countMinutes}M` : `0${countMinutes}M`;
 
-  const timeDuration = hours > 0 ? `${hours}H ${minutes}M` : `${minutes}M`;
+  const timeDuration = `${countDays ? days : ''} ${countHours ? hours : ''} ${countMinutes ? minutes : ''}`;
   return timeDuration;
 };
 

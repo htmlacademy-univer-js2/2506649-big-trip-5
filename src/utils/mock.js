@@ -30,7 +30,7 @@ const getRandomDate = () => {
 
 const getPairRandomDates = () => {
   const dateFrom = getRandomDate().format(DEFAULT_DATE_FORMAT);
-  const dateTo = dayjs(dateFrom).add(getRandomNumber(1, 1440), 'minute').format(DEFAULT_DATE_FORMAT);
+  const dateTo = dayjs(dateFrom).add(getRandomNumber(1, 2880), 'minute').format(DEFAULT_DATE_FORMAT);
 
   return {dateFrom, dateTo};
 };

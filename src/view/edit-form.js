@@ -3,6 +3,9 @@ import {FormMode, POINT_TYPES} from '../const.js';
 import {formatToFullDate, humanizeTime, capitalizeFirstLetter} from '../utils/waypoints.js';
 import { toggleArrayElement } from '../utils/common.js';
 import { generateWayointId } from '../mock/point.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
   id: generateWayointId(),
@@ -140,6 +143,8 @@ export default class EditWaypointView extends AbstractStatefulView {
   #updateDestination = null;
   #updateOffers = null;
   #mode = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor ({point = BLANK_POINT, offers, destination, destinationsList, handleFormSumbmit, onCloseForm, updateDestination, updateOffers}) {
     super();
@@ -163,6 +168,20 @@ export default class EditWaypointView extends AbstractStatefulView {
     this.updateElement(EditWaypointView.parsePointToState(point, offers, destination));
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
   _restoreHandlers() {
     this.element.addEventListener('submit', this.#onFormSubmit);
     this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onCloseForm);
@@ -170,6 +189,8 @@ export default class EditWaypointView extends AbstractStatefulView {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#onTypeClick);
     this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
     this.element.querySelector('.event__available-offers')?.addEventListener('click', this.#onOfferClick);
+
+    this.#setDatepickers();
   }
 
   #onFormSubmit = (evt) => {
@@ -191,6 +212,9 @@ export default class EditWaypointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
+    if (!evt.target.value) {
+      return;
+    }
 
     const updatedDestination = this.#updateDestination(evt.target.value);
     this.updateElement({
@@ -235,6 +259,52 @@ export default class EditWaypointView extends AbstractStatefulView {
       }
     });
   };
+
+  #onDateFromChange = ([userDate]) => {
+    this._setState({
+      point: {
+        ...this._state.point,
+        dateFrom: userDate.toISOString()
+      }
+    });
+  };
+
+  #onDateToChange = ([userDate]) => {
+    this._setState({
+      point: {
+        ...this._state.point,
+        dateTo: userDate.toISOString()
+      }
+    });
+  };
+
+  #setDatepickers() {
+    const defaultConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      'time_24hr': true,
+    };
+
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        ...defaultConfig,
+        defaultDate: new Date(this._state.point.dateFrom),
+        maxDate: new Date(this._state.point.dateTo),
+        onChange: this.#onDateFromChange
+      }
+    );
+
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        ...defaultConfig,
+        defaultDate: new Date(this._state.point.dateTo),
+        minDate: new Date(this._state.point.dateFrom),
+        onChange: this.#onDateToChange
+      }
+    );
+  }
 
   static parsePointToState(point, offers, destination) {
     return {
