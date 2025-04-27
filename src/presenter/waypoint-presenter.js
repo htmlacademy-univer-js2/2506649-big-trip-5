@@ -10,6 +10,8 @@ export default class WaypointPresenter {
   #waypointComponent = null;
   #waypointEditComponent = null;
   #resetWaypointsMode = null;
+  #updateDestination = null;
+  #updateOffers = null;
 
   #point = null;
   #destinationsList = null;
@@ -19,10 +21,12 @@ export default class WaypointPresenter {
 
   #mode = Mode.DEFAULT;
 
-  constructor({eventsListComponent, updateWaypointsData, resetWaypointsMode}) {
+  constructor({eventsListComponent, updateWaypointsData, resetWaypointsMode, updateDestination, updateOffers}) {
     this.#eventsListComponent = eventsListComponent;
     this.#updateWaypointsData = updateWaypointsData;
     this.#resetWaypointsMode = resetWaypointsMode;
+    this.#updateDestination = updateDestination;
+    this.#updateOffers = updateOffers;
   }
 
 
@@ -48,7 +52,10 @@ export default class WaypointPresenter {
       offers: this.#offersList,
       destination: this.#destination,
       destinationsList: this.#destinationsList,
-      onFormSumbmit: this.#onFormSubmit,
+      handleFormSumbmit: this.#handleFormSubmit,
+      onCloseForm: this.#onCloseForm,
+      updateDestination: this.#updateDestination,
+      updateOffers: this.#updateOffers,
     });
 
     if (prevWaypointComponent === null || prevWaypointEditComponent === null) {
@@ -75,6 +82,7 @@ export default class WaypointPresenter {
 
   resetToDefaultWaypoint() {
     if (this.#mode === Mode.EDITING) {
+      this.#waypointEditComponent.reset(this.#point, this.#offersList, this.#destination);
       this.#replaceFormToPoint();
     }
   }
@@ -92,9 +100,15 @@ export default class WaypointPresenter {
     this.#mode = Mode.DEFAULT;
   }
 
+  #handleFormSubmit = (updatedWaypoint) => {
+    this.#updateWaypointsData(updatedWaypoint);
+    this.#replaceFormToPoint();
+  };
+
   #onEscKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#waypointEditComponent.reset(this.#point, this.#offersList, this.#destination);
       this.#replaceFormToPoint();
     }
   };
@@ -104,10 +118,10 @@ export default class WaypointPresenter {
     this.#replacePointToForm();
   };
 
-  #onFormSubmit = (evt) => {
+  #onCloseForm = (evt) => {
     evt.preventDefault();
+    this.#waypointEditComponent.reset(this.#point, this.#offersList, this.#destination);
     this.#replaceFormToPoint();
-    document.removeEventListener('keydown', this.#onEscKeydown);
   };
 
   #onFavoriteClick = (evt) => {
@@ -116,7 +130,6 @@ export default class WaypointPresenter {
     const updatedPoint = {...this.#point, isFavorite: !this.#point.isFavorite};
     const updatedWaypoint = {
       point: updatedPoint,
-      destinationsList: this.#destinationsList,
       destination: this.#destination,
       offersList: this.#offersList,
     };

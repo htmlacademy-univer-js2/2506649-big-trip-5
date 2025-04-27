@@ -21,4 +21,4 @@ const generateWaypoint = (destinationId, offers) => {
   };
 };
 
-export {generateWaypoint};
+export {generateWaypoint, generateWayointId};
