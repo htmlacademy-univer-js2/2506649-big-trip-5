@@ -10,12 +10,18 @@ import 'flatpickr/dist/flatpickr.min.css';
 const BLANK_POINT = {
   id: generateWayointId(),
   basePrice: 0,
-  dateFrom: null,
-  dateTo: null,
+  dateFrom: new Date(),
+  dateTo: new Date(),
   destination: null,
   isFavorite: false,
   offers: [],
   type: 'flight',
+};
+
+const BLANK_DESTIONATION = {
+  description: '',
+  name: '',
+  pictures: []
 };
 
 const createEventTypeTemplate = (type, checkedAttribute) => (`
@@ -47,7 +53,7 @@ const createOfferTemplate = ({id, title, price}, checkedAttribute) => (`
 const createEditWaypointTemplate = ({point, offers : offersType, destination}, destinationsList, mode) => {
   const {basePrice, dateFrom, dateTo, offers : offersPoint, type} = point;
   const {offers} = offersType;
-  const {name, description, pictures} = destination;
+  const {id, name, description, pictures} = destination;
 
   return (`
     <li class="trip-events__item">
@@ -77,7 +83,7 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
             <label class="event__label  event__type-output" for="event-destination-1">
               ${capitalizeFirstLetter(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" data-id="${id}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${destinationsList.map((item) => createDestinationsListTemplate(item.name))}
             </datalist>
@@ -138,7 +144,7 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
 
 export default class EditWaypointView extends AbstractStatefulView {
   #destinationsList = null;
-  #handleFormSumbmit = null;
+  #handleFormSubmit = null;
   #onCloseForm = null;
   #handleDeleteClick = null;
   #updateDestination = null;
@@ -147,11 +153,11 @@ export default class EditWaypointView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor ({point = BLANK_POINT, offers, destination, destinationsList, handleFormSumbmit, onCloseForm, handleDeleteClick, updateDestination, updateOffers}) {
+  constructor ({point = BLANK_POINT, offers, destination = BLANK_DESTIONATION, destinationsList, handleFormSubmit, onCloseForm, handleDeleteClick, updateDestination, updateOffers}) {
     super();
     this._setState(EditWaypointView.parsePointToState(point, offers, destination));
     this.#destinationsList = destinationsList;
-    this.#handleFormSumbmit = handleFormSumbmit;
+    this.#handleFormSubmit = handleFormSubmit;
     this.#onCloseForm = onCloseForm;
     this.#handleDeleteClick = handleDeleteClick;
     this.#updateDestination = updateDestination;
@@ -199,7 +205,7 @@ export default class EditWaypointView extends AbstractStatefulView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#handleFormSumbmit(EditWaypointView.parseStateToPoint(this._state));
+    this.#handleFormSubmit(EditWaypointView.parseStateToPoint(this._state));
   };
 
   #onDeleteClick = (evt) => {
@@ -227,6 +233,10 @@ export default class EditWaypointView extends AbstractStatefulView {
 
     const updatedDestination = this.#updateDestination(evt.target.value);
     this.updateElement({
+      point:{
+        ...this._state.point,
+        destination: updatedDestination.id
+      },
       destination: updatedDestination
     });
   };

@@ -56,7 +56,7 @@ export default class TripModel extends Observable {
   addWaypoint(updateType, updatedWaypoint) {
     this.#waypoints = [
       ...this.#waypoints,
-      updatedWaypoint
+      updatedWaypoint.point
     ];
 
     this._notify(updateType, updatedWaypoint);

@@ -9,8 +9,10 @@ const createOfferTemplate = ({title, price}) => (`
   </li>
 `);
 
-const createWaypointTemplate = (point, {offers}, {name}) => {
+const createWaypointTemplate = (point, offersList, destination) => {
   const {basePrice, dateFrom, dateTo, isFavorite, offers : offersPoint, type} = point;
+  const {offers} = offersList;
+  const {name} = destination;
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   return (`
     <li class="trip-events__item">

@@ -76,4 +76,9 @@ const NoWaypointsText = {
   [FilterType.PAST]: 'There are no past events now',
 };
 
-export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText};
+const NewWaypointButtonMode = {
+  DISABLED: 'disabled',
+  ENABLED: 'enabled'
+};
+
+export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText, NewWaypointButtonMode};

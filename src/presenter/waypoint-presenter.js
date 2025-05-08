@@ -53,7 +53,7 @@ export default class WaypointPresenter {
       offers: this.#offersList,
       destination: this.#destination,
       destinationsList: this.#destinationsList,
-      handleFormSumbmit: this.#handleFormSubmit,
+      handleFormSubmit: this.#handleFormSubmit,
       onCloseForm: this.#onCloseForm,
       handleDeleteClick: this.#handleDeleteClick,
       updateDestination: this.#updateDestination,
