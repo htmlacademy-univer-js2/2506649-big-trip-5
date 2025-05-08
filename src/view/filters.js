@@ -12,9 +12,9 @@ const createFiltersItemTemplate = (filter, isChecked) => {
 };
 
 
-const createFiltersTemplate = (filters) => {
-  const filtersList = filters.map((filter, index) => {
-    const isChecked = index === 0;
+const createFiltersTemplate = (filters, currentFilterType) => {
+  const filtersList = filters.map((filter) => {
+    const isChecked = filter.name === currentFilterType;
 
     return createFiltersItemTemplate(filter, isChecked);
   }).join('');
@@ -31,13 +31,25 @@ const createFiltersTemplate = (filters) => {
 
 export default class FiltersView extends AbstractView {
   #filters = null;
+  #currentFilterType = null;
+  #handleFilterTypeChange = null;
 
-  constructor({filters}) {
+  constructor({filters, currentFilterType, handleFilterTypeChange}) {
     super();
     this.#filters = filters;
+    this.#currentFilterType = currentFilterType;
+    this.#handleFilterTypeChange = handleFilterTypeChange;
+
+    this.element.addEventListener('change', this.#onFilterTypeChange);
   }
 
   get template () {
-    return createFiltersTemplate(this.#filters);
+    return createFiltersTemplate(this.#filters, this.#currentFilterType);
   }
+
+  #onFilterTypeChange = (evt) => {
+    evt.preventDefault();
+
+    this.#handleFilterTypeChange(evt.target.value);
+  };
 }

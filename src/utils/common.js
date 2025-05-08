@@ -2,8 +2,6 @@ const getRandomNumber = (min, max) => (Math.floor(min + Math.random() * (max - m
 
 const getRandomArrayElement = (array) => (array[getRandomNumber(0, array.length - 1)]);
 
-const updateItem = (items, updatedItem) => (items.map((item) => item.id === updatedItem.id ? updatedItem : item));
-
 const toggleArrayElement = (array, element) => {
   const indexElement = array.findIndex((item) => item === element);
 
@@ -14,4 +12,4 @@ const toggleArrayElement = (array, element) => {
   return array.filter((_, index) => index !== indexElement);
 };
 
-export {getRandomNumber, getRandomArrayElement, updateItem, toggleArrayElement};
+export {getRandomNumber, getRandomArrayElement, toggleArrayElement};
