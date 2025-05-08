@@ -66,10 +66,14 @@ export default class EventsPresenter {
     }
   }
 
-  #updateWaypointsData = (updatedWaypoint) => {
+  #updateWaypointsData = (updatedPoint) => {
     const destinationsList = this.#tripModel.destinations;
-    this.#waypointPresenters.get(updatedWaypoint.point.id).init({
-      ...updatedWaypoint,
+    const destination = this.#tripModel.getDestinationById(updatedPoint.destination);
+    const offersList = this.#tripModel.getOffersByType(updatedPoint.type);
+    this.#waypointPresenters.get(updatedPoint.id).init({
+      point: updatedPoint,
+      destination,
+      offersList,
       destinationsList
     });
   };

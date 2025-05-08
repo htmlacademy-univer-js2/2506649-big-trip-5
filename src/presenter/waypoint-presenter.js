@@ -113,8 +113,9 @@ export default class WaypointPresenter {
     this.#updateWaypointsData(
       UserAction.UPDATE_WAYPOINT,
       updateType,
-      updatedWaypoint
+      updatedWaypoint.point
     );
+
     this.#replaceFormToPoint();
   };
 
@@ -141,7 +142,7 @@ export default class WaypointPresenter {
     this.#updateWaypointsData(
       UserAction.DELETE_WAYPOINT,
       UpdateType.MINOR,
-      waypoint
+      waypoint.point
     );
   };
 
@@ -149,16 +150,11 @@ export default class WaypointPresenter {
     evt.preventDefault();
 
     const updatedPoint = {...this.#point, isFavorite: !this.#point.isFavorite};
-    const updatedWaypoint = {
-      point: updatedPoint,
-      destination: this.#destination,
-      offersList: this.#offersList,
-    };
 
     this.#updateWaypointsData(
       UserAction.UPDATE_WAYPOINT,
       UpdateType.MINOR,
-      updatedWaypoint
+      updatedPoint
     );
   };
 }

@@ -206,6 +206,10 @@ export default class EditWaypointView extends AbstractStatefulView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
+    if (!this._state.point.destination || !this._state.point.type) {
+      return;
+    }
+
     this.#handleFormSubmit(EditWaypointView.parseStateToPoint(this._state));
   };
 
