@@ -32,7 +32,7 @@ const OFFER_TITLES = [
   'Lunch in city',
 ];
 
-const filterTypes = {
+const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
@@ -69,4 +69,11 @@ const UpdateType = {
   MAJOR: 'major',
 };
 
-export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, filterTypes, Mode, SortType, FormMode, UserAction, UpdateType};
+const NoWaypointsText = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
+};
+
+export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText};

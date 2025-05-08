@@ -3,26 +3,31 @@ import SortingView from '../view/sorting.js';
 import EventsListView from '../view/events-list.js';
 import NoWaypointsView from '../view/no-waypoints.js';
 import WaypointPresenter from './waypoint-presenter.js';
-import {SortType, UpdateType, UserAction} from '../const.js';
+import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
 import {sortByDate, sortByPrice, sortByTime} from '../utils/waypoints.js';
+import { filter } from '../utils/filter.js';
 
 export default class EventsPresenter {
   #container = null;
   #tripModel = null;
+  #filterModel = null;
 
   #sortingComponent = null;
-  #noWaypointsComponent = new NoWaypointsView();
+  #noWaypointsComponent = null;
   #eventsListComponent = new EventsListView();
 
   #waypointPresenters = new Map();
 
   #currentSort = SortType.DAY;
+  #currentFilter = FilterType.EVERYTHING;
 
-  constructor(container, tripModel) {
+  constructor({eventsContainer: container, tripModel, filterModel}) {
     this.#container = container;
     this.#tripModel = tripModel;
+    this.#filterModel = filterModel;
 
     this.#tripModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   init() {
@@ -30,13 +35,17 @@ export default class EventsPresenter {
   }
 
   get waypoints() {
+    this.#currentFilter = this.#filterModel.filter;
+    const waypoints = this.#tripModel.waypoints;
+    const filteredWaypoints = filter[this.#currentFilter](waypoints);
+
     switch (this.#currentSort) {
       case SortType.TIME:
-        return [...this.#tripModel.waypoints].sort(sortByTime);
+        return filteredWaypoints.sort(sortByTime);
       case SortType.PRICE:
-        return [...this.#tripModel.waypoints].sort(sortByPrice);
+        return filteredWaypoints.sort(sortByPrice);
       default:
-        return [...this.#tripModel.waypoints].sort(sortByDate);
+        return filteredWaypoints.sort(sortByDate);
     }
   }
 
@@ -131,6 +140,8 @@ export default class EventsPresenter {
   }
 
   #renderNoWaypoints() {
+    this.#noWaypointsComponent = new NoWaypointsView({filterType: this.#currentFilter});
+
     render(this.#noWaypointsComponent, this.#container);
   }
 
