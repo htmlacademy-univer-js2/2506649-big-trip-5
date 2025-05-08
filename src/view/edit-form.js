@@ -100,7 +100,7 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${mode === FormMode.ADDING ? 'Cancel' : 'Delete'}</button>
+          <button class="event__reset-btn ${mode === FormMode.EDITING ? 'delete-btn' : 'cancel-btn'}" type="reset">${mode === FormMode.ADDING ? 'Cancel' : 'Delete'}</button>
           ${mode === FormMode.EDITING ? `<button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>` : ''}
@@ -140,18 +140,20 @@ export default class EditWaypointView extends AbstractStatefulView {
   #destinationsList = null;
   #handleFormSumbmit = null;
   #onCloseForm = null;
+  #handleDeleteClick = null;
   #updateDestination = null;
   #updateOffers = null;
   #mode = null;
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor ({point = BLANK_POINT, offers, destination, destinationsList, handleFormSumbmit, onCloseForm, updateDestination, updateOffers}) {
+  constructor ({point = BLANK_POINT, offers, destination, destinationsList, handleFormSumbmit, onCloseForm, handleDeleteClick, updateDestination, updateOffers}) {
     super();
     this._setState(EditWaypointView.parsePointToState(point, offers, destination));
     this.#destinationsList = destinationsList;
     this.#handleFormSumbmit = handleFormSumbmit;
     this.#onCloseForm = onCloseForm;
+    this.#handleDeleteClick = handleDeleteClick;
     this.#updateDestination = updateDestination;
     this.#updateOffers = updateOffers;
 
@@ -185,10 +187,12 @@ export default class EditWaypointView extends AbstractStatefulView {
   _restoreHandlers() {
     this.element.addEventListener('submit', this.#onFormSubmit);
     this.element.querySelector('.event__rollup-btn')?.addEventListener('click', this.#onCloseForm);
+    this.element.querySelector('.cancel-btn')?.addEventListener('click', this.#onCloseForm);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#onDestinationChange);
     this.element.querySelector('.event__type-list').addEventListener('change', this.#onTypeClick);
     this.element.querySelector('#event-price-1').addEventListener('input', this.#onPriceInput);
     this.element.querySelector('.event__available-offers')?.addEventListener('click', this.#onOfferClick);
+    this.element.querySelector('.delete-btn')?.addEventListener('click', this.#onDeleteClick);
 
     this.#setDatepickers();
   }
@@ -196,6 +200,11 @@ export default class EditWaypointView extends AbstractStatefulView {
   #onFormSubmit = (evt) => {
     evt.preventDefault();
     this.#handleFormSumbmit(EditWaypointView.parseStateToPoint(this._state));
+  };
+
+  #onDeleteClick = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditWaypointView.parseStateToPoint(this._state));
   };
 
   #onPriceInput = (evt) => {

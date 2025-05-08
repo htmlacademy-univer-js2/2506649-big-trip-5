@@ -1,7 +1,8 @@
 import WaypointView from '../view/waypoint.js';
 import EditWaypointView from '../view/edit-form.js';
 import {render, replace, remove} from '../framework/render.js';
-import {Mode} from '../const.js';
+import {Mode, UpdateType, UserAction} from '../const.js';
+import { isDatesEqual } from '../utils/waypoints.js';
 
 
 export default class WaypointPresenter {
@@ -54,6 +55,7 @@ export default class WaypointPresenter {
       destinationsList: this.#destinationsList,
       handleFormSumbmit: this.#handleFormSubmit,
       onCloseForm: this.#onCloseForm,
+      handleDeleteClick: this.#handleDeleteClick,
       updateDestination: this.#updateDestination,
       updateOffers: this.#updateOffers,
     });
@@ -101,7 +103,18 @@ export default class WaypointPresenter {
   }
 
   #handleFormSubmit = (updatedWaypoint) => {
-    this.#updateWaypointsData(updatedWaypoint);
+    const isStartDatesEqual = isDatesEqual(updatedWaypoint.point.dateFrom, this.#point.dateFrom);
+    const isEndDatesEqual = isDatesEqual(updatedWaypoint.point.dateTo, this.#point.dateTo);
+    const isPricesEqual = updatedWaypoint.point.basePrice === this.#point.basePrice;
+
+    const updateType = isStartDatesEqual && isEndDatesEqual && isPricesEqual ?
+      UpdateType.PATCH : UpdateType.MINOR;
+
+    this.#updateWaypointsData(
+      UserAction.UPDATE_WAYPOINT,
+      updateType,
+      updatedWaypoint
+    );
     this.#replaceFormToPoint();
   };
 
@@ -124,6 +137,14 @@ export default class WaypointPresenter {
     this.#replaceFormToPoint();
   };
 
+  #handleDeleteClick = (waypoint) => {
+    this.#updateWaypointsData(
+      UserAction.DELETE_WAYPOINT,
+      UpdateType.MINOR,
+      waypoint
+    );
+  };
+
   #onFavoriteClick = (evt) => {
     evt.preventDefault();
 
@@ -134,6 +155,10 @@ export default class WaypointPresenter {
       offersList: this.#offersList,
     };
 
-    this.#updateWaypointsData(updatedWaypoint);
+    this.#updateWaypointsData(
+      UserAction.UPDATE_WAYPOINT,
+      UpdateType.MINOR,
+      updatedWaypoint
+    );
   };
 }

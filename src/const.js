@@ -57,4 +57,16 @@ const FormMode = {
   ADDING: 'adding',
 };
 
-export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, filterTypes, Mode, SortType, FormMode};
+const UserAction = {
+  UPDATE_WAYPOINT: 'updateWaypoint',
+  ADD_WAYPOINT: 'addWaypoint',
+  DELETE_WAYPOINT: 'deleteWaypoint',
+};
+
+const UpdateType = {
+  PATCH: 'patch',
+  MINOR: 'minor',
+  MAJOR: 'major',
+};
+
+export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, filterTypes, Mode, SortType, FormMode, UserAction, UpdateType};

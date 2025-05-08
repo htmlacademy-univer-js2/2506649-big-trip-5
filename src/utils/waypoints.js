@@ -52,4 +52,7 @@ const sortByPrice = (waypointA, waypointB) => {
   return priceB - priceA;
 };
 
-export {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, formatToFullDate, capitalizeFirstLetter, getTimeDuration, humanizeTimeDuration, sortByDate, sortByTime, sortByPrice};
+const isDatesEqual = (dateA, dateB) =>
+  (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+
+export {humanizeDate, humanizeTime, formatToShortDefaultDate, formatToDefaultDate, formatToFullDate, capitalizeFirstLetter, getTimeDuration, humanizeTimeDuration, sortByDate, sortByTime, sortByPrice, isDatesEqual};

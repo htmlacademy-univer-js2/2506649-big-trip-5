@@ -38,7 +38,7 @@ export default class TripModel extends Observable {
   }
 
   updateWaypoint(updateType, updatedWaypoint) {
-    const index = this.#waypoints.findIndex(({id}) => id === updatedWaypoint.id);
+    const index = this.#waypoints.findIndex(({id}) => id === updatedWaypoint.point.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting waypoint');
@@ -63,7 +63,7 @@ export default class TripModel extends Observable {
   }
 
   deleteWaypoint(updateType, updatedWaypoint) {
-    const index = this.#waypoints.findIndex(({id}) => id === updatedWaypoint.id);
+    const index = this.#waypoints.findIndex(({id}) => id === updatedWaypoint.point.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting waypoint');
