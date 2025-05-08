@@ -4,6 +4,7 @@ import {formatToFullDate, humanizeTime, capitalizeFirstLetter} from '../utils/wa
 import { toggleArrayElement } from '../utils/common.js';
 import { generateWayointId } from '../mock/point.js';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -83,7 +84,7 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
             <label class="event__label  event__type-output" for="event-destination-1">
               ${capitalizeFirstLetter(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" data-id="${id}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(String(name))}" data-id="${id}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${destinationsList.map((item) => createDestinationsListTemplate(item.name))}
             </datalist>
@@ -102,7 +103,7 @@ const createEditWaypointTemplate = ({point, offers : offersType, destination}, d
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${basePrice}>
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value=${he.encode(String(basePrice))}>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -215,8 +216,15 @@ export default class EditWaypointView extends AbstractStatefulView {
 
   #onPriceInput = (evt) => {
     evt.preventDefault();
+    const inputNumber = evt.target.value;
+    const isNumber = typeof Number(inputNumber) === 'number' && !isNaN(Number(inputNumber));
 
-    const updatedPrice = evt.target.value;
+    if (!isNumber && inputNumber.length !== 0) {
+      evt.target.value = inputNumber.slice(0,-1);
+      return;
+    }
+
+    const updatedPrice = inputNumber;
     this._setState({
       point: {
         ...this._state.point,
@@ -227,7 +235,11 @@ export default class EditWaypointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    if (!evt.target.value) {
+    const isDestinationFromList = this.#destinationsList.some(
+      (destination) => destination.name === evt.target.value);
+
+    if (!evt.target.value || !isDestinationFromList) {
+      evt.target.value = '';
       return;
     }
 
