@@ -32,7 +32,7 @@ const OFFER_TITLES = [
   'Lunch in city',
 ];
 
-const filterTypes = {
+const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
@@ -57,4 +57,28 @@ const FormMode = {
   ADDING: 'adding',
 };
 
-export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, filterTypes, Mode, SortType, FormMode};
+const UserAction = {
+  UPDATE_WAYPOINT: 'updateWaypoint',
+  ADD_WAYPOINT: 'addWaypoint',
+  DELETE_WAYPOINT: 'deleteWaypoint',
+};
+
+const UpdateType = {
+  PATCH: 'patch',
+  MINOR: 'minor',
+  MAJOR: 'major',
+};
+
+const NoWaypointsText = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
+};
+
+const NewWaypointButtonMode = {
+  DISABLED: 'disabled',
+  ENABLED: 'enabled'
+};
+
+export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText, NewWaypointButtonMode};

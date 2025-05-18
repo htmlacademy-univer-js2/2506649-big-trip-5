@@ -1,7 +1,8 @@
 import WaypointView from '../view/waypoint.js';
 import EditWaypointView from '../view/edit-form.js';
 import {render, replace, remove} from '../framework/render.js';
-import {Mode} from '../const.js';
+import {Mode, UpdateType, UserAction} from '../const.js';
+import { isDatesEqual } from '../utils/waypoints.js';
 
 
 export default class WaypointPresenter {
@@ -52,8 +53,9 @@ export default class WaypointPresenter {
       offers: this.#offersList,
       destination: this.#destination,
       destinationsList: this.#destinationsList,
-      handleFormSumbmit: this.#handleFormSubmit,
+      handleFormSubmit: this.#handleFormSubmit,
       onCloseForm: this.#onCloseForm,
+      handleDeleteClick: this.#handleDeleteClick,
       updateDestination: this.#updateDestination,
       updateOffers: this.#updateOffers,
     });
@@ -101,7 +103,19 @@ export default class WaypointPresenter {
   }
 
   #handleFormSubmit = (updatedWaypoint) => {
-    this.#updateWaypointsData(updatedWaypoint);
+    const isStartDatesEqual = isDatesEqual(updatedWaypoint.point.dateFrom, this.#point.dateFrom);
+    const isEndDatesEqual = isDatesEqual(updatedWaypoint.point.dateTo, this.#point.dateTo);
+    const isPricesEqual = updatedWaypoint.point.basePrice === this.#point.basePrice;
+
+    const updateType = isStartDatesEqual && isEndDatesEqual && isPricesEqual ?
+      UpdateType.PATCH : UpdateType.MINOR;
+
+    this.#updateWaypointsData(
+      UserAction.UPDATE_WAYPOINT,
+      updateType,
+      updatedWaypoint.point
+    );
+
     this.#replaceFormToPoint();
   };
 
@@ -124,16 +138,23 @@ export default class WaypointPresenter {
     this.#replaceFormToPoint();
   };
 
+  #handleDeleteClick = (waypoint) => {
+    this.#updateWaypointsData(
+      UserAction.DELETE_WAYPOINT,
+      UpdateType.MINOR,
+      waypoint.point
+    );
+  };
+
   #onFavoriteClick = (evt) => {
     evt.preventDefault();
 
     const updatedPoint = {...this.#point, isFavorite: !this.#point.isFavorite};
-    const updatedWaypoint = {
-      point: updatedPoint,
-      destination: this.#destination,
-      offersList: this.#offersList,
-    };
 
-    this.#updateWaypointsData(updatedWaypoint);
+    this.#updateWaypointsData(
+      UserAction.UPDATE_WAYPOINT,
+      UpdateType.MINOR,
+      updatedPoint
+    );
   };
 }

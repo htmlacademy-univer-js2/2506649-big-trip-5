@@ -25,7 +25,7 @@ const getRandomOffersIds = (maxOffersCount) => {
 
 const getRandomDate = () => {
   const currentDate = dayjs();
-  return currentDate.add(getRandomNumber(1, 365), 'day');
+  return currentDate.add(getRandomNumber(-7, 7), 'day');
 };
 
 const getPairRandomDates = () => {
