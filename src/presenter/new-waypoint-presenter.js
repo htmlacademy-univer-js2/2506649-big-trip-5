@@ -63,14 +63,31 @@ export default class NewWaypointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#waypointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#waypointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#waypointEditComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (waypoint) => {
     this.#handleWaypointsDataUpdate(
       UserAction.ADD_WAYPOINT,
       UpdateType.MINOR,
       waypoint.point,
     );
-
-    this.destroy();
   };
 
   #onCloseForm = (evt) => {
