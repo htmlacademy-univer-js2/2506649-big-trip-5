@@ -9,8 +9,9 @@ import {sortByDate, sortByPrice, sortByTime} from '../utils/waypoints.js';
 import { filter } from '../utils/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 import NewWaypointButton from '../view/new-waypoint-button.js';
-import LoadingView from '../view/loading-view.js';
+import LoadingView from '../view/loading.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import ErrorLoadingView from '../view/error-loading.js';
 
 export default class EventsPresenter {
   #container = null;
@@ -23,6 +24,7 @@ export default class EventsPresenter {
   #eventsListComponent = new EventsListView();
   #newWaypointButtonComponent = null;
   #loadingComponent = new LoadingView();
+  #errorLoadingComponent = new ErrorLoadingView();
 
   #NewWaypointButtonMode = NewWaypointButtonMode.ENABLED;
 
@@ -32,6 +34,7 @@ export default class EventsPresenter {
   #currentSort = SortType.DAY;
   #currentFilter = FilterType.EVERYTHING;
   #isLoading = true;
+  #isError = false;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
@@ -138,6 +141,11 @@ export default class EventsPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#renderEvents();
+        break;
+      case UpdateType.ERROR:
+        this.#isError = true;
+        this.#clearEvents();
         this.#renderEvents();
         break;
     }
@@ -260,10 +268,20 @@ export default class EventsPresenter {
     render(this.#loadingComponent, this.#container);
   }
 
+  #renderErrorLoading() {
+    render(this.#errorLoadingComponent, this.#container);
+  }
+
   #renderEvents() {
+    if (this.#isError) {
+      this.#renderErrorLoading();
+    }
+
     if (this.#isLoading) {
       this.#renderLoading();
+    }
 
+    if (this.#isError || this.#isLoading) {
       this.#NewWaypointButtonMode = NewWaypointButtonMode.DISABLED;
       this.#renderNewWaypointButton();
       return;

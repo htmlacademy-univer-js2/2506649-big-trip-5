@@ -30,6 +30,7 @@ export default class TripModel extends Observable {
       this.#waypoints = waypoints;
     } catch(err) {
       this.#waypoints = [];
+      this._notify(UpdateType.ERROR);
     }
 
     try {
@@ -37,6 +38,7 @@ export default class TripModel extends Observable {
       this.#offers = offers;
     } catch(err) {
       this.#offers = [];
+      this._notify(UpdateType.ERROR);
     }
 
     try {
@@ -44,6 +46,7 @@ export default class TripModel extends Observable {
       this.#destinations = destinations;
     } catch(err) {
       this.#destinations = [];
+      this._notify(UpdateType.ERROR);
     }
 
     this._notify(UpdateType.INIT);

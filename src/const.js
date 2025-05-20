@@ -65,7 +65,8 @@ const UpdateType = {
   PATCH: 'patch',
   MINOR: 'minor',
   MAJOR: 'major',
-  INIT: 'init'
+  INIT: 'init',
+  ERROR: 'error'
 };
 
 const NoWaypointsText = {
