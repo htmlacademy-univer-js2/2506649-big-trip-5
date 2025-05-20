@@ -66,7 +66,7 @@ export default class EventsPresenter {
     }
   }
 
-  #updateWaypointsData = (updatedPoint) => {
+  #updateWaypointPresentersData = (updatedPoint) => {
     const destinationsList = this.#tripModel.destinations;
     const destination = this.#tripModel.getDestinationById(updatedPoint.destination);
     const offersList = this.#tripModel.getOffersByType(updatedPoint.type);
@@ -95,7 +95,7 @@ export default class EventsPresenter {
   #handleModelEvent = (updateType, updatedWaypoint) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#updateWaypointsData(updatedWaypoint);
+        this.#updateWaypointPresentersData(updatedWaypoint);
         break;
       case UpdateType.MINOR:
         this.#clearEvents();
@@ -126,19 +126,19 @@ export default class EventsPresenter {
     }
   }
 
-  #updateDestination = (updatedName) => {
+  #handleDestinationUpdate = (updatedName) => {
     const updatedDestination = this.#tripModel.getDestinationByName(updatedName);
 
     return updatedDestination;
   };
 
-  #updateOffers = (updatedType) => {
+  #handleOffersUpdate = (updatedType) => {
     const updatedOffers = this.#tripModel.getOffersByType(updatedType);
 
     return updatedOffers;
   };
 
-  #changeNewWaypointButtonMode = () => {
+  #changeNewWaypointButtonModeAndRerender = () => {
     this.#NewWaypointButtonMode = NewWaypointButtonMode.ENABLED;
     this.#renderNewWaypointButton();
   };
@@ -146,12 +146,12 @@ export default class EventsPresenter {
   #renderNewWaypointPresenter() {
     this.#newWaypointPresenter = new NewWaypointPresenter({
       eventsListContainer: this.#eventsListComponent,
-      updateWaypointsData: this.#handleViewAction,
+      updateWaypointPresentersData: this.#handleViewAction,
       offers: this.#tripModel.getOffersByType('flight'),
       destinationsList: this.#tripModel.destinations,
-      updateDestination: this.#updateDestination,
-      updateOffers: this.#updateOffers,
-      changeNewWaypointButtonMode: this.#changeNewWaypointButtonMode
+      handleDestinationUpdate: this.#handleDestinationUpdate,
+      handleOffersUpdate: this.#handleOffersUpdate,
+      changeNewWaypointButtonModeAndRerender: this.#changeNewWaypointButtonModeAndRerender
     });
   }
 
@@ -171,10 +171,10 @@ export default class EventsPresenter {
   #renderWaypoint(point, destinationsList, destination, offersList) {
     const waypointPresenter = new WaypointPresenter({
       eventsListComponent: this.#eventsListComponent.element,
-      updateWaypointsData: this.#handleViewAction,
+      handleWaypointsDataUpdate: this.#handleViewAction,
       resetWaypointsMode: this.#resetWaypointsMode,
-      updateDestination: this.#updateDestination,
-      updateOffers: this.#updateOffers,
+      handleDestinationUpdate: this.#handleDestinationUpdate,
+      handleOffersUpdate: this.#handleOffersUpdate,
     });
 
     waypointPresenter.init({point, destinationsList, destination, offersList});
