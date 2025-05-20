@@ -7,21 +7,27 @@ export default class NewWaypointPresenter {
   #updateWaypointsData = null;
   #offers = null;
   #destinationsList = null;
-  #updateDestination = null;
-  #updateOffers = null;
-  #changeNewWaypointButtonMode = null;
+  #handleDestinationUpdate = null;
+  #handleOffersUpdate = null;
+  #changeNewWaypointButtonModeAndRerender = null;
 
   #waypointEditComponent = null;
 
-  constructor({eventsListContainer, updateWaypointsData,
-    offers, destinationsList, updateDestination, updateOffers, changeNewWaypointButtonMode}) {
+  constructor({
+    eventsListContainer,
+    updateWaypointsData,
+    offers, destinationsList,
+    handleDestinationUpdate,
+    handleOffersUpdate,
+    changeNewWaypointButtonModeAndRerender
+  }) {
     this.#eventsListContainer = eventsListContainer;
     this.#updateWaypointsData = updateWaypointsData;
     this.#offers = offers;
     this.#destinationsList = destinationsList;
-    this.#updateDestination = updateDestination;
-    this.#updateOffers = updateOffers;
-    this.#changeNewWaypointButtonMode = changeNewWaypointButtonMode;
+    this.#handleDestinationUpdate = handleDestinationUpdate;
+    this.#handleOffersUpdate = handleOffersUpdate;
+    this.#changeNewWaypointButtonModeAndRerender = changeNewWaypointButtonModeAndRerender;
   }
 
   init() {
@@ -34,8 +40,8 @@ export default class NewWaypointPresenter {
       destinationsList: this.#destinationsList,
       handleFormSubmit: this.#handleFormSubmit,
       onCloseForm: this.#onCloseForm,
-      updateDestination: this.#updateDestination,
-      updateOffers: this.#updateOffers,
+      handleDestinationUpdate: this.#handleDestinationUpdate,
+      handleOffersUpdate: this.#handleOffersUpdate,
     });
 
     render(this.#waypointEditComponent, this.#eventsListContainer.element, RenderPosition.AFTERBEGIN);
@@ -48,7 +54,7 @@ export default class NewWaypointPresenter {
       return;
     }
 
-    this.#changeNewWaypointButtonMode();
+    this.#changeNewWaypointButtonModeAndRerender();
 
     remove(this.#waypointEditComponent);
     this.#waypointEditComponent = null;

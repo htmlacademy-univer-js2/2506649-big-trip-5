@@ -36,7 +36,7 @@ const createWaypointTemplate = (point, offersList, destination) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${offersPoint.map((id) => createOfferTemplate(offers[id - 1])).join('')}
+          ${offersPoint.map((id) => createOfferTemplate(offers.find((offer) => id === offer.id))).join('')}
         </ul>
         <button class="event__favorite-btn ${favoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>

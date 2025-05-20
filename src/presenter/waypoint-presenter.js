@@ -11,23 +11,24 @@ export default class WaypointPresenter {
   #waypointComponent = null;
   #waypointEditComponent = null;
   #resetWaypointsMode = null;
-  #updateDestination = null;
-  #updateOffers = null;
+  #handleDestinationUpdate = null;
+  #handleOffersUpdate = null;
 
   #point = null;
   #destinationsList = null;
   #destination = null;
   #offersList = null;
-  #updateWaypointsData = null;
+  #handleWaypointsDataUpdate = null;
 
   #mode = Mode.DEFAULT;
 
-  constructor({eventsListComponent, updateWaypointsData, resetWaypointsMode, updateDestination, updateOffers}) {
+  constructor({eventsListComponent, handleWaypointsDataUpdate, resetWaypointsMode,
+    handleDestinationUpdate, handleOffersUpdate}) {
     this.#eventsListComponent = eventsListComponent;
-    this.#updateWaypointsData = updateWaypointsData;
+    this.#handleWaypointsDataUpdate = handleWaypointsDataUpdate;
     this.#resetWaypointsMode = resetWaypointsMode;
-    this.#updateDestination = updateDestination;
-    this.#updateOffers = updateOffers;
+    this.#handleDestinationUpdate = handleDestinationUpdate;
+    this.#handleOffersUpdate = handleOffersUpdate;
   }
 
 
@@ -56,8 +57,8 @@ export default class WaypointPresenter {
       handleFormSubmit: this.#handleFormSubmit,
       onCloseForm: this.#onCloseForm,
       handleDeleteClick: this.#handleDeleteClick,
-      updateDestination: this.#updateDestination,
-      updateOffers: this.#updateOffers,
+      handleDestinationUpdate: this.#handleDestinationUpdate,
+      handleOffersUpdate: this.#handleOffersUpdate,
     });
 
     if (prevWaypointComponent === null || prevWaypointEditComponent === null) {
@@ -110,7 +111,7 @@ export default class WaypointPresenter {
     const updateType = isStartDatesEqual && isEndDatesEqual && isPricesEqual ?
       UpdateType.PATCH : UpdateType.MINOR;
 
-    this.#updateWaypointsData(
+    this.#handleWaypointsDataUpdate(
       UserAction.UPDATE_WAYPOINT,
       updateType,
       updatedWaypoint.point
@@ -139,7 +140,7 @@ export default class WaypointPresenter {
   };
 
   #handleDeleteClick = (waypoint) => {
-    this.#updateWaypointsData(
+    this.#handleWaypointsDataUpdate(
       UserAction.DELETE_WAYPOINT,
       UpdateType.MINOR,
       waypoint.point
@@ -151,7 +152,7 @@ export default class WaypointPresenter {
 
     const updatedPoint = {...this.#point, isFavorite: !this.#point.isFavorite};
 
-    this.#updateWaypointsData(
+    this.#handleWaypointsDataUpdate(
       UserAction.UPDATE_WAYPOINT,
       UpdateType.MINOR,
       updatedPoint

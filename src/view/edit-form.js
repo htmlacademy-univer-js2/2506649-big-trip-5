@@ -2,14 +2,12 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {FormMode, POINT_TYPES} from '../const.js';
 import {formatToFullDate, humanizeTime, capitalizeFirstLetter} from '../utils/waypoints.js';
 import { toggleArrayElement } from '../utils/common.js';
-import { generateWayointId } from '../mock/point.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  id: generateWayointId(),
   basePrice: 0,
   dateFrom: new Date(),
   dateTo: new Date(),
@@ -33,7 +31,7 @@ const createEventTypeTemplate = (type, checkedAttribute) => (`
 `);
 
 const createDestinationsListTemplate = (destination) => (`
-  <option value=${destination}></option>
+  <option value="${destination}"></option>
 `);
 
 const createDestinationImageTemplate = ({src, description}) => (`
@@ -148,21 +146,21 @@ export default class EditWaypointView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #onCloseForm = null;
   #handleDeleteClick = null;
-  #updateDestination = null;
-  #updateOffers = null;
+  #handleDestinationUpdate = null;
+  #handleOffersUpdate = null;
   #mode = null;
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor ({point = BLANK_POINT, offers, destination = BLANK_DESTIONATION, destinationsList, handleFormSubmit, onCloseForm, handleDeleteClick, updateDestination, updateOffers}) {
+  constructor ({point = BLANK_POINT, offers, destination = BLANK_DESTIONATION, destinationsList, handleFormSubmit, onCloseForm, handleDeleteClick, handleDestinationUpdate, handleOffersUpdate}) {
     super();
     this._setState(EditWaypointView.parsePointToState(point, offers, destination));
     this.#destinationsList = destinationsList;
     this.#handleFormSubmit = handleFormSubmit;
     this.#onCloseForm = onCloseForm;
     this.#handleDeleteClick = handleDeleteClick;
-    this.#updateDestination = updateDestination;
-    this.#updateOffers = updateOffers;
+    this.#handleDestinationUpdate = handleDestinationUpdate;
+    this.#handleOffersUpdate = handleOffersUpdate;
 
     this.#mode = point === BLANK_POINT ? FormMode.ADDING : FormMode.EDITING;
 
@@ -228,7 +226,7 @@ export default class EditWaypointView extends AbstractStatefulView {
       return;
     }
 
-    const updatedPrice = inputNumber;
+    const updatedPrice = Number(inputNumber);
     this._setState({
       point: {
         ...this._state.point,
@@ -247,7 +245,7 @@ export default class EditWaypointView extends AbstractStatefulView {
       return;
     }
 
-    const updatedDestination = this.#updateDestination(evt.target.value);
+    const updatedDestination = this.#handleDestinationUpdate(evt.target.value);
     this.updateElement({
       point:{
         ...this._state.point,
@@ -266,7 +264,7 @@ export default class EditWaypointView extends AbstractStatefulView {
     }
 
     const updatedType = clickedElement.value;
-    const updatedOffers = this.#updateOffers(updatedType);
+    const updatedOffers = this.#handleOffersUpdate(updatedType);
 
     this.updateElement({
       point: {
@@ -284,7 +282,7 @@ export default class EditWaypointView extends AbstractStatefulView {
       return;
     }
 
-    const updatedOfferId = Number(clickedElement.id);
+    const updatedOfferId = clickedElement.id;
     const updatedOffers = toggleArrayElement(this._state.point.offers, updatedOfferId);
 
     this._setState({

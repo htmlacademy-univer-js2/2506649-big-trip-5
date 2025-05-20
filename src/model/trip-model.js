@@ -1,14 +1,16 @@
+import { UpdateType } from '../const.js';
 import Observable from '../framework/observable.js';
-import {WAYPPOINTS_COUNT} from '../const.js';
-import {POINT_TYPES} from '../const.js';
-import {generateWaypoint} from '../mock/point.js';
-import {generateOffers} from '../mock/offers.js';
-import {generateDestination} from '../mock/destination.js';
 
 export default class TripModel extends Observable {
-  #destinations = Array.from({length: WAYPPOINTS_COUNT}, () => generateDestination());
-  #offers = POINT_TYPES.map((type) => generateOffers(type));
-  #waypoints = this.#destinations.map(({id}) => generateWaypoint(id, this.offers));
+  #destinations = [];
+  #offers = [];
+  #waypoints = [];
+  #waypointsApiService = null;
+
+  constructor({waypointsApiService}) {
+    super();
+    this.#waypointsApiService = waypointsApiService;
+  }
 
   get waypoints() {
     return this.#waypoints;
@@ -20,6 +22,31 @@ export default class TripModel extends Observable {
 
   get destinations() {
     return this.#destinations;
+  }
+
+  async init() {
+    try {
+      const waypoints = await this.#waypointsApiService.points;
+      this.#waypoints = waypoints;
+    } catch(err) {
+      this.#waypoints = [];
+    }
+
+    try {
+      const offers = await this.#waypointsApiService.offers;
+      this.#offers = offers;
+    } catch(err) {
+      this.#offers = [];
+    }
+
+    try {
+      const destinations = await this.#waypointsApiService.destinations;
+      this.#destinations = destinations;
+    } catch(err) {
+      this.#destinations = [];
+    }
+
+    this._notify(UpdateType.INIT);
   }
 
   getDestinationById(id) {
@@ -37,20 +64,27 @@ export default class TripModel extends Observable {
     return allOffers.find((offer) => offer.type === type);
   }
 
-  updateWaypoint(updateType, updatedWaypoint) {
-    const index = this.#waypoints.findIndex(({id}) => id === updatedWaypoint.id);
+  async updateWaypoint(updateType, update) {
+    const index = this.#waypoints.findIndex(({id}) => id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting waypoint');
     }
 
-    this.#waypoints = [
-      ...this.#waypoints.slice(0, index),
-      updatedWaypoint,
-      ...this.#waypoints.slice(index + 1)
-    ];
+    try {
+      const updatedWaypoint = await this.#waypointsApiService.updatePoint(update);
 
-    this._notify(updateType, updatedWaypoint);
+      this.#waypoints = [
+        ...this.#waypoints.slice(0, index),
+        updatedWaypoint,
+        ...this.#waypoints.slice(index + 1)
+      ];
+
+      this._notify(updateType, updatedWaypoint);
+
+    } catch(error) {
+      throw new Error('Can\'t update point');
+    }
   }
 
   addWaypoint(updateType, updatedWaypoint) {

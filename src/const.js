@@ -1,5 +1,3 @@
-const WAYPPOINTS_COUNT = 10;
-const DEFAULT_DATE_FORMAT = 'YYYY-MM-DDTHH:mm:ss.sssZ';
 const SHORT_DEFAULT_FORMAT = 'YYYY-MM-DD';
 const SHORT_DATE_FORMAT = 'MMM D';
 const FULL_DATE_FORMAT = 'DD/MM/YY';
@@ -67,6 +65,7 @@ const UpdateType = {
   PATCH: 'patch',
   MINOR: 'minor',
   MAJOR: 'major',
+  INIT: 'init'
 };
 
 const NoWaypointsText = {
@@ -81,4 +80,9 @@ const NewWaypointButtonMode = {
   ENABLED: 'enabled'
 };
 
-export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, DEFAULT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, WAYPPOINTS_COUNT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText, NewWaypointButtonMode};
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
+export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText, NewWaypointButtonMode, Method};
