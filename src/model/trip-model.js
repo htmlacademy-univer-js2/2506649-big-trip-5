@@ -87,27 +87,41 @@ export default class TripModel extends Observable {
     }
   }
 
-  addWaypoint(updateType, updatedWaypoint) {
-    this.#waypoints = [
-      ...this.#waypoints,
-      updatedWaypoint
-    ];
+  async addWaypoint(updateType, update) {
+    try {
+      const newWaypoint = await this.#waypointsApiService.addPoint(update);
 
-    this._notify(updateType, updatedWaypoint);
+      this.#waypoints = [
+        ...this.#waypoints,
+        newWaypoint
+      ];
+
+      this._notify(updateType, newWaypoint);
+
+    } catch(error) {
+      throw new Error('Can\'t add point');
+    }
   }
 
-  deleteWaypoint(updateType, updatedWaypoint) {
-    const index = this.#waypoints.findIndex(({id}) => id === updatedWaypoint.id);
+  async deleteWaypoint(updateType, update) {
+    const index = this.#waypoints.findIndex(({id}) => id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting waypoint');
     }
 
-    this.#waypoints = [
-      ...this.#waypoints.slice(0, index),
-      ...this.#waypoints.slice(index + 1)
-    ];
+    try {
+      await this.#waypointsApiService.deletePoint(update);
 
-    this._notify(updateType);
+      this.#waypoints = [
+        ...this.#waypoints.slice(0, index),
+        ...this.#waypoints.slice(index + 1)
+      ];
+
+      this._notify(updateType);
+
+    } catch(error) {
+      throw new Error('Can\'t delete point');
+    }
   }
 }

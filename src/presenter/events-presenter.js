@@ -37,8 +37,6 @@ export default class EventsPresenter {
     this.#filterModel = filterModel;
     this.#newWaypointButtonContainer = newWaypointButtonContainer;
 
-    this.#renderNewWaypointPresenter();
-
     this.#tripModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -51,6 +49,7 @@ export default class EventsPresenter {
     this.#currentSort = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
+    this.#renderNewWaypointPresenter();
     this.#newWaypointPresenter.init();
   }
 
@@ -154,7 +153,7 @@ export default class EventsPresenter {
   #renderNewWaypointPresenter() {
     this.#newWaypointPresenter = new NewWaypointPresenter({
       eventsListContainer: this.#eventsListComponent,
-      updateWaypointPresentersData: this.#handleViewAction,
+      handleWaypointsDataUpdate: this.#handleViewAction,
       offers: this.#tripModel.getOffersByType('flight'),
       destinationsList: this.#tripModel.destinations,
       handleDestinationUpdate: this.#handleDestinationUpdate,
