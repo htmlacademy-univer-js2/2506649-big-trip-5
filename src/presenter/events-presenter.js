@@ -8,6 +8,7 @@ import {sortByDate, sortByPrice, sortByTime} from '../utils/waypoints.js';
 import { filter } from '../utils/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 import NewWaypointButton from '../view/new-waypoint-button.js';
+import LoadingView from '../view/loading-view.js';
 
 export default class EventsPresenter {
   #container = null;
@@ -19,6 +20,7 @@ export default class EventsPresenter {
   #noWaypointsComponent = null;
   #eventsListComponent = new EventsListView();
   #newWaypointButtonComponent = null;
+  #loadingComponent = new LoadingView();
 
   #NewWaypointButtonMode = NewWaypointButtonMode.ENABLED;
 
@@ -27,6 +29,7 @@ export default class EventsPresenter {
 
   #currentSort = SortType.DAY;
   #currentFilter = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor({eventsContainer: container, tripModel, filterModel, newWaypointButtonContainer}) {
     this.#container = container;
@@ -103,6 +106,11 @@ export default class EventsPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearEvents({resetSortType: true});
+        this.#renderEvents();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderEvents();
         break;
     }
@@ -221,7 +229,20 @@ export default class EventsPresenter {
     render(this.#eventsListComponent, this.#container);
   }
 
+  #renderLoading () {
+    render(this.#loadingComponent, this.#container);
+  }
+
   #renderEvents() {
+    if (this.#isLoading) {
+      this.#renderLoading();
+
+      this.#NewWaypointButtonMode = NewWaypointButtonMode.DISABLED;
+      this.#renderNewWaypointButton();
+      return;
+    }
+
+    this.#NewWaypointButtonMode = NewWaypointButtonMode.ENABLED;
     this.#renderNewWaypointButton();
 
     if (!this.waypoints.length) {

@@ -2,14 +2,12 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {FormMode, POINT_TYPES} from '../const.js';
 import {formatToFullDate, humanizeTime, capitalizeFirstLetter} from '../utils/waypoints.js';
 import { toggleArrayElement } from '../utils/common.js';
-import { generateWayointId } from '../mock/point.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  id: generateWayointId(),
   basePrice: 0,
   dateFrom: new Date(),
   dateTo: new Date(),
@@ -33,7 +31,7 @@ const createEventTypeTemplate = (type, checkedAttribute) => (`
 `);
 
 const createDestinationsListTemplate = (destination) => (`
-  <option value=${destination}></option>
+  <option value="${destination}"></option>
 `);
 
 const createDestinationImageTemplate = ({src, description}) => (`
@@ -228,7 +226,7 @@ export default class EditWaypointView extends AbstractStatefulView {
       return;
     }
 
-    const updatedPrice = inputNumber;
+    const updatedPrice = Number(inputNumber);
     this._setState({
       point: {
         ...this._state.point,
@@ -284,7 +282,7 @@ export default class EditWaypointView extends AbstractStatefulView {
       return;
     }
 
-    const updatedOfferId = Number(clickedElement.id);
+    const updatedOfferId = clickedElement.id;
     const updatedOffers = toggleArrayElement(this._state.point.offers, updatedOfferId);
 
     this._setState({
