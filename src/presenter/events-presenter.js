@@ -3,12 +3,15 @@ import SortingView from '../view/sorting.js';
 import EventsListView from '../view/events-list.js';
 import NoWaypointsView from '../view/no-waypoints.js';
 import WaypointPresenter from './waypoint-presenter.js';
-import {FilterType, NewWaypointButtonMode, SortType, UpdateType, UserAction} from '../const.js';
+import {FilterType, NewWaypointButtonMode, SortType, TimeLimit, UpdateType, UserAction}
+  from '../const.js';
 import {sortByDate, sortByPrice, sortByTime} from '../utils/waypoints.js';
 import { filter } from '../utils/filter.js';
 import NewWaypointPresenter from './new-waypoint-presenter.js';
 import NewWaypointButton from '../view/new-waypoint-button.js';
-import LoadingView from '../view/loading-view.js';
+import LoadingView from '../view/loading.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import ErrorLoadingView from '../view/error-loading.js';
 
 export default class EventsPresenter {
   #container = null;
@@ -21,6 +24,7 @@ export default class EventsPresenter {
   #eventsListComponent = new EventsListView();
   #newWaypointButtonComponent = null;
   #loadingComponent = new LoadingView();
+  #errorLoadingComponent = new ErrorLoadingView();
 
   #NewWaypointButtonMode = NewWaypointButtonMode.ENABLED;
 
@@ -30,14 +34,17 @@ export default class EventsPresenter {
   #currentSort = SortType.DAY;
   #currentFilter = FilterType.EVERYTHING;
   #isLoading = true;
+  #isError = false;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({eventsContainer: container, tripModel, filterModel, newWaypointButtonContainer}) {
     this.#container = container;
     this.#tripModel = tripModel;
     this.#filterModel = filterModel;
     this.#newWaypointButtonContainer = newWaypointButtonContainer;
-
-    this.#renderNewWaypointPresenter();
 
     this.#tripModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -51,6 +58,7 @@ export default class EventsPresenter {
     this.#currentSort = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
+    this.#renderNewWaypointPresenter();
     this.#newWaypointPresenter.init();
   }
 
@@ -81,18 +89,40 @@ export default class EventsPresenter {
     });
   };
 
-  #handleViewAction = (actionType, updateType, updatedWaypoint) => {
+  #handleViewAction = async (actionType, updateType, updatedWaypoint) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_WAYPOINT:
-        this.#tripModel.updateWaypoint(updateType, updatedWaypoint);
+        this.#waypointPresenters.get(updatedWaypoint.id).setSaving();
+        try {
+          await this.#tripModel.updateWaypoint(updateType, updatedWaypoint);
+        } catch (error) {
+          this.#waypointPresenters.get(updatedWaypoint.id).setAborting();
+        }
         break;
+
       case UserAction.ADD_WAYPOINT:
-        this.#tripModel.addWaypoint(updateType, updatedWaypoint);
+        this.#newWaypointPresenter.setSaving();
+        try {
+          await this.#tripModel.addWaypoint(updateType, updatedWaypoint);
+          this.#newWaypointPresenter.destroy();
+        } catch(error) {
+          this.#newWaypointPresenter.setAborting();
+        }
         break;
+
       case UserAction.DELETE_WAYPOINT:
-        this.#tripModel.deleteWaypoint(updateType, updatedWaypoint);
+        this.#waypointPresenters.get(updatedWaypoint.id).setDeleting();
+        try {
+          await this.#tripModel.deleteWaypoint(updateType, updatedWaypoint);
+        } catch (error) {
+          this.#waypointPresenters.get(updatedWaypoint.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, updatedWaypoint) => {
@@ -111,6 +141,11 @@ export default class EventsPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#renderEvents();
+        break;
+      case UpdateType.ERROR:
+        this.#isError = true;
+        this.#clearEvents();
         this.#renderEvents();
         break;
     }
@@ -154,7 +189,7 @@ export default class EventsPresenter {
   #renderNewWaypointPresenter() {
     this.#newWaypointPresenter = new NewWaypointPresenter({
       eventsListContainer: this.#eventsListComponent,
-      updateWaypointPresentersData: this.#handleViewAction,
+      handleWaypointsDataUpdate: this.#handleViewAction,
       offers: this.#tripModel.getOffersByType('flight'),
       destinationsList: this.#tripModel.destinations,
       handleDestinationUpdate: this.#handleDestinationUpdate,
@@ -233,10 +268,20 @@ export default class EventsPresenter {
     render(this.#loadingComponent, this.#container);
   }
 
+  #renderErrorLoading() {
+    render(this.#errorLoadingComponent, this.#container);
+  }
+
   #renderEvents() {
+    if (this.#isError) {
+      this.#renderErrorLoading();
+    }
+
     if (this.#isLoading) {
       this.#renderLoading();
+    }
 
+    if (this.#isError || this.#isLoading) {
       this.#NewWaypointButtonMode = NewWaypointButtonMode.DISABLED;
       this.#renderNewWaypointButton();
       return;

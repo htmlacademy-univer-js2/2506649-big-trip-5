@@ -4,7 +4,7 @@ import EditWaypointView from '../view/edit-form.js';
 
 export default class NewWaypointPresenter {
   #eventsListContainer = null;
-  #updateWaypointsData = null;
+  #handleWaypointsDataUpdate = null;
   #offers = null;
   #destinationsList = null;
   #handleDestinationUpdate = null;
@@ -15,14 +15,15 @@ export default class NewWaypointPresenter {
 
   constructor({
     eventsListContainer,
-    updateWaypointsData,
-    offers, destinationsList,
+    handleWaypointsDataUpdate,
+    offers,
+    destinationsList,
     handleDestinationUpdate,
     handleOffersUpdate,
     changeNewWaypointButtonModeAndRerender
   }) {
     this.#eventsListContainer = eventsListContainer;
-    this.#updateWaypointsData = updateWaypointsData;
+    this.#handleWaypointsDataUpdate = handleWaypointsDataUpdate;
     this.#offers = offers;
     this.#destinationsList = destinationsList;
     this.#handleDestinationUpdate = handleDestinationUpdate;
@@ -62,14 +63,31 @@ export default class NewWaypointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#waypointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#waypointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#waypointEditComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (waypoint) => {
-    this.#updateWaypointsData(
+    this.#handleWaypointsDataUpdate(
       UserAction.ADD_WAYPOINT,
       UpdateType.MINOR,
       waypoint.point,
     );
-
-    this.destroy();
   };
 
   #onCloseForm = (evt) => {

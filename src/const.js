@@ -65,7 +65,8 @@ const UpdateType = {
   PATCH: 'patch',
   MINOR: 'minor',
   MAJOR: 'major',
-  INIT: 'init'
+  INIT: 'init',
+  ERROR: 'error'
 };
 
 const NoWaypointsText = {
@@ -83,6 +84,13 @@ const NewWaypointButtonMode = {
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
-export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText, NewWaypointButtonMode, Method};
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+export {TIME_FORMAT, FULL_DATE_FORMAT, SHORT_DATE_FORMAT, SHORT_DEFAULT_FORMAT, POINT_TYPES, CITIES, DESCRIPTIONS, OFFER_TITLES, FilterType, Mode, SortType, FormMode, UserAction, UpdateType, NoWaypointsText, NewWaypointButtonMode, Method, TimeLimit};
